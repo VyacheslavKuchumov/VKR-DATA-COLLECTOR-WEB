@@ -15,7 +15,8 @@ app = FastAPI(root_path="/api",
 
 # Define allowed origins (adjust the list to your requirements)
 origins = [
-    "*"
+    "https://data.vyachik-dev.ru",
+    "http://localhost:8080",
 ]
 
 # Add CORS middleware to the FastAPI app
