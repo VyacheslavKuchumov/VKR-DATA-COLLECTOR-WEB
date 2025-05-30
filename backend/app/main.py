@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.database import engine, Base
+
 from app.routers import auth, user, events, seats, seats_in_events, venues, bookings
 from app.websocket.websocketEndpoint import router as websocket_router
 
@@ -9,7 +9,7 @@ from app.websocket.websocketEndpoint import router as websocket_router
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(root_path="/api",
-    title="FastAPI",
+    title="Data collector API",
     description="Sluvik's API"
 )
 

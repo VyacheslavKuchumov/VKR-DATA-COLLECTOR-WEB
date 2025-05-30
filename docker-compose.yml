@@ -1,0 +1,59 @@
+services:
+  mongo_db:
+    image: mongo:latest
+    env_file:
+      - .env
+    # environment:
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27017:27017"
+###########################################
+
+
+  backend:
+    # build:
+    #   context: ./backend
+    #   args:
+    #     SECRET: ${SECRET}
+    env_file:
+      - .env
+    environment:
+      MONGO_URI: ${MONGO_URI}
+    depends_on:
+      - mongo_db
+    ports:
+      - "8000:8000"
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ./backend:/app
+
+###########################################
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        BACKEND_SERVER: ${BACKEND_SERVER}
+    env_file:
+      - .env
+    environment:
+      BACKEND_SERVER: ${BACKEND_SERVER}
+      WATCHPACK_POLLING: true
+
+    ports:
+      - "8080:8080"
+    depends_on:
+      - backend
+    command: npm run serve
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+
+###########################################
+###########################################
+
+
+
+volumes:
+  mongo_data:
