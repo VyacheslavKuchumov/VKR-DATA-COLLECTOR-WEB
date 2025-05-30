@@ -1,27 +1,30 @@
 services:
-  mongo_db:
-    image: mongo:latest
-    env_file:
-      - .env
-    # environment:
-    volumes:
-      - mongo_data:/data/db
-    ports:
-      - "27017:27017"
+  # mongo_db:
+  #   image: mongo:latest
+  #   env_file:
+  #     - .env
+  #   # environment:
+  #     # MONGO_INITDB_ROOT_USERNAME: root
+  #     # MONGO_INITDB_ROOT_PASSWORD: example
+  #     # MONGO_INITDB_DATABASE: jobs_db
+  #   volumes:
+  #     - mongo_data:/data/db
+  #   ports:
+  #     - "27017:27017"
 ###########################################
 
 
   backend:
-    # build:
-    #   context: ./backend
-    #   args:
-    #     SECRET: ${SECRET}
+    build:
+      context: ./backend
+      # args:
+      #   MONGODB_URI: ${MONGODB_URI}
     env_file:
       - .env
     environment:
-      MONGO_URI: ${MONGO_URI}
-    depends_on:
-      - mongo_db
+      MONGODB_URI: ${MONGODB_URI}
+    # depends_on:
+    #   - mongo_db
     ports:
       - "8000:8000"
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
@@ -33,11 +36,11 @@ services:
     build:
       context: ./frontend
       args:
-        BACKEND_SERVER: ${BACKEND_SERVER}
+        VUE_APP_SERVER: ${VUE_APP_SERVER}
     env_file:
       - .env
     environment:
-      BACKEND_SERVER: ${BACKEND_SERVER}
+      VUE_APP_SERVER: ${VUE_APP_SERVER}
       WATCHPACK_POLLING: true
 
     ports:

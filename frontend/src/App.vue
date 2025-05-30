@@ -27,7 +27,7 @@
             title="Реквизиты к hh.ru">
           </v-list-item>
           <v-list-item 
-            to="/"
+            to="/regions"
             title="Регионы для сбора данных">
           </v-list-item>
           <v-list-item 

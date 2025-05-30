@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import instance from "@/middlewares";
 
 import HomeView from "@/views/HomeView.vue";
+import RegionsView from "@/views/spravochniki/RegionsView.vue";
 
 
 
@@ -16,7 +17,12 @@ const routes = [
     path: "/",
     name: "home",
     component: HomeView,
-    meta: { auth: true },
+    
+  },
+  {
+    path: "/regions",
+    name: "regions",
+    component: RegionsView,
   },
  
   

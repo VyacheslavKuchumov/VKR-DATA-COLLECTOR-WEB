@@ -1,5 +1,14 @@
+# app/db.py
 from motor.motor_asyncio import AsyncIOMotorClient
-from app.config import settings
+from fastapi import Depends
+from app.config import Settings
 
-client = AsyncIOMotorClient(settings.MONGO_URI)
-db = client.get_default_database()
+# Load MongoDB URI from your config
+MONGO_DETAILS = Settings().MONGODB_URI  # e.g. "mongodb://localhost:27017"
+
+# Create a single client instance
+client = AsyncIOMotorClient(MONGO_DETAILS)
+
+db = client.app_db
+student_collection = db.get_collection("students")
+region_collection = db.get_collection("regions")

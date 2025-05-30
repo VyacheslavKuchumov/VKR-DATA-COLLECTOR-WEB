@@ -2,8 +2,10 @@ import axios from "axios";
 
 
 
+
 const instance = axios.create({
-    baseURL: process.env.BACKEND_SERVER,
+    // Use the environment variable for the backend server URL
+    baseURL: process.env.VUE_APP_SERVER,
     headers: {
         'Content-Type': 'application/json; charset = utf-8'
     }

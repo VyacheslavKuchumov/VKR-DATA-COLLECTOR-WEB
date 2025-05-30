@@ -1,12 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import auth, user, events, seats, seats_in_events, venues, bookings
+
 from app.websocket.websocketEndpoint import router as websocket_router
+from app.routers.student_router import router as student_router
+from app.routers.region_router import router as region_router
 
 
-# Create all tables (in production, use Alembic for migrations)
-Base.metadata.create_all(bind=engine)
 
 app = FastAPI(root_path="/api",
     title="Data collector API",
@@ -27,14 +27,10 @@ app.add_middleware(
     allow_headers=["*"],    # Allows all headers
 )
 
-# Include your API routers
-app.include_router(auth.router, prefix="/auth", tags=["auth"])
-app.include_router(user.router, prefix="/users", tags=["users"])
-app.include_router(bookings.router, prefix="/bookings", tags=["bookings"])
-app.include_router(events.router, prefix="/events", tags=["events"])
-app.include_router(seats.router, prefix="/seats", tags=["seats"])
-app.include_router(seats_in_events.router, prefix="/seats_in_events", tags=["seats_in_events"])
-app.include_router(venues.router, prefix="/venues", tags=["venues"])
+
+# Include routers
+app.include_router(student_router, prefix="/students", tags=["students"])
+app.include_router(region_router, prefix="/regions", tags=["regions"])
 
 
 # websockets

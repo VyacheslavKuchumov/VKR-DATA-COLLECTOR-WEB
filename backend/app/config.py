@@ -1,8 +1,8 @@
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
-    # SECRET: str
-    MONGO_URI: str
+
+    MONGODB_URI: str
 
     class Config:
         env_file = ".env"
