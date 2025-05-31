@@ -13,3 +13,4 @@ db = client.app_db
 student_collection = db.get_collection("students")
 region_collection = db.get_collection("regions")
 hh_ru_credentials_collection = db.get_collection("hh_ru_credentials")
+jobs_collection = db.get_collection("jobs")

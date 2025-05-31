@@ -4,19 +4,26 @@ from app.websocket.connectionManager import manager
 
 router = APIRouter()
 
+@router.websocket("/ws/{job_id}")
+async def websocket_endpoint(websocket: WebSocket, job_id: str):
+    """
+    Clients connect to /ws/{job_id} to both send control messages
+    (if you support them) and receive broadcasts for that job.
+    """
+    # 1) accept & register under this job_id
+    await manager.connect(job_id, websocket)
 
-@router.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    await manager.connect(websocket)
     try:
         while True:
-            # Receive a message from the client
+            # (optional) receive from client
             data = await websocket.receive_text()
-            # Process the message using controller logic
+            # let your controller do something if needed
             response = await process_message(data)
-            # Broadcast the processed response to all connected clients
-            await manager.broadcast(response)
+
+            # 2) broadcast to everyone listening on this job_id
+            await manager.broadcast(job_id, response)
+
     except WebSocketDisconnect:
-        # Remove the client from active connections when they disconnect
-        manager.disconnect(websocket)
-        print("Client disconnected")
+        # 3) clean up
+        manager.disconnect(job_id, websocket)
+        print(f"Client disconnected from job {job_id}")

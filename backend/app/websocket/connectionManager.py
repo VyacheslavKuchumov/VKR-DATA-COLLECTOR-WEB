@@ -1,20 +1,24 @@
 from fastapi import WebSocket
 
-# Step 1: Create a connection manager to handle multiple WebSocket connections
+
 class ConnectionManager:
     def __init__(self):
-        self.active_connections: list[WebSocket] = []
+        self.jobs: dict[str, set[WebSocket]] = {}
 
-    async def connect(self, websocket: WebSocket):
-        await websocket.accept()
-        self.active_connections.append(websocket)
+    async def connect(self, job_id: str, ws: WebSocket):
+        await ws.accept()
+        self.jobs.setdefault(job_id, set()).add(ws)
 
-    def disconnect(self, websocket: WebSocket):
-        self.active_connections.remove(websocket)
+    def disconnect(self, job_id: str, ws: WebSocket):
+        self.jobs.get(job_id, set()).discard(ws)
 
-    async def broadcast(self, message: str):
-        for connection in self.active_connections:
-            await connection.send_text(message)
+    async def broadcast(self, job_id: str, message: str):
+        for ws in list(self.jobs.get(job_id, [])):
+            try:
+                await ws.send_text(message)
+            except:
+                self.disconnect(job_id, ws)
+
 
 # Instantiate the connection manager
 manager = ConnectionManager()

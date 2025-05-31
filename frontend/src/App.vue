@@ -22,7 +22,7 @@
           </v-list-item>
 
           <v-list-item 
-            to="/"
+            to="/hh-ru-jobs"
             title="Сбор данных с hh.ru">
           </v-list-item>
           

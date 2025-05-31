@@ -1,51 +1,55 @@
 class WebSocketService {
-  constructor() {
-    this.url = process.env.VUE_APP_SERVER + "/ws";
+  /**
+   * @param {string} jobId – the UUID of the job you’re subscribing to
+   */
+  constructor(jobId) {
+    this.jobId = jobId;
+    this.url = `${process.env.VUE_APP_SERVER.replace(/\/+$/,"")}/ws/${jobId}`;
     this.socket = null;
-    this.forcedClose = false;             // When true, stops reconnection attempts.
-    this.reconnectInterval = 5000;          // Initial reconnection delay (in ms).
-    this.maxReconnectInterval = 30000;      // Maximum allowed reconnection delay.
-    this.reconnectDecay = 1.5;              // Factor by which the interval increases.
-    this.timeoutId = null;                // Stores the timeout ID for reconnection.
-    this.customOnClose = null;            // Optional custom onClose callback.
+    this.forcedClose = false;
+    this.reconnectInterval = 5000;
+    this.maxReconnectInterval = 30000;
+    this.reconnectDecay = 1.5;
+    this.timeoutId = null;
+    this.customOnClose = null;
+    this.customOnMessage = null;
   }
 
-  connect() {
-    // Reset forcedClose flag if connect is called after a disconnect.
+  async connect() {
     this.forcedClose = false;
     this.socket = new WebSocket(this.url);
 
     return new Promise((resolve, reject) => {
       this.socket.onopen = () => {
-        console.log("WebSocket connection opened");
-        // Reset the reconnection interval on successful connection.
+        console.log(`[WS][${this.jobId}] opened`);
         this.reconnectInterval = 5000;
         resolve();
       };
 
-      this.socket.onerror = (error) => {
-        console.error("WebSocket error:", error);
-        // Error handling: onclose will take care of reconnect logic.
+      this.socket.onerror = (err) => {
+        console.error(`[WS][${this.jobId}] error:`, err);
       };
 
-      // Combined onclose handler that manages custom callback and reconnection.
-      this.socket.onclose = (event) => {
-        console.log("WebSocket connection closed:", event);
-        
-        // Call the custom onClose callback if it has been set.
-        if (typeof this.customOnClose === 'function') {
-          this.customOnClose(event);
+      this.socket.onmessage = (event) => {
+        if (typeof this.customOnMessage === 'function') {
+          this.customOnMessage(event.data);
+        } else {
+          console.log(`[WS][${this.jobId}] message:`, event.data);
         }
-        
+      };
+
+      this.socket.onclose = (evt) => {
+        console.log(`[WS][${this.jobId}] closed`, evt);
+        if (typeof this.customOnClose === 'function') {
+          this.customOnClose(evt);
+        }
         if (!this.forcedClose) {
-          // Attempt to reconnect after the current interval.
           this.timeoutId = setTimeout(() => {
-            // Increase the interval with an exponential backoff strategy.
             this.reconnectInterval = Math.min(
               this.reconnectInterval * this.reconnectDecay,
               this.maxReconnectInterval
             );
-            console.log(`Reconnecting in ${this.reconnectInterval} ms...`);
+            console.log(`[WS][${this.jobId}] reconnect in ${this.reconnectInterval}ms`);
             this.connect();
           }, this.reconnectInterval);
         }
@@ -53,40 +57,31 @@ class WebSocketService {
     });
   }
 
-  // Allows external code to register a custom onClose callback.
-  onClose(callback) {
-    if (typeof callback === 'function') {
-      this.customOnClose = callback;
-    } else {
-      console.error("Provided onClose callback is not a function.");
-    }
-  }
-
+  /**
+   * Register a handler for incoming messages (log lines)
+   * @param {function(string)} callback 
+   */
   onMessage(callback) {
-    if (this.socket) {
-      this.socket.onmessage = (event) => {
-        callback(event.data);
-      };
-    }
+    this.customOnMessage = callback;
   }
 
-  send(message) {
-    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      this.socket.send(message);
-    } else {
-      console.error("WebSocket is not open. Cannot send message.");
-    }
+  /**
+   * Register a handler for socket close events
+   * @param {function} callback 
+   */
+  onClose(callback) {
+    this.customOnClose = callback;
   }
 
+  /**
+   * Close the socket and stop reconnection attempts
+   */
   disconnect() {
-    // Prevent the reconnection logic from re-triggering.
     this.forcedClose = true;
-    if (this.timeoutId) {
-      clearTimeout(this.timeoutId);
-    }
+    if (this.timeoutId) clearTimeout(this.timeoutId);
     if (this.socket) {
       this.socket.close();
-      console.log("WebSocket connection closed");
+      console.log(`[WS][${this.jobId}] forced close`);
     }
   }
 }
