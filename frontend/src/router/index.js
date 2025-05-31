@@ -3,16 +3,17 @@ import instance from "@/middlewares";
 
 import HomeView from "@/views/HomeView.vue";
 import RegionsView from "@/views/spravochniki/RegionsView.vue";
+import WebSocketTest from "@/views/WebsocketTest.vue";
 
 
 
 
 const routes = [
-  // {
-  //   path: "/test",
-  //   name: "websocket-test",
-  //   component: WebSocketTest,
-  // },
+  {
+    path: "/test",
+    name: "websocket-test",
+    component: WebSocketTest,
+  },
   {
     path: "/",
     name: "home",

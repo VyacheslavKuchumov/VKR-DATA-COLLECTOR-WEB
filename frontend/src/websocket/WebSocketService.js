@@ -1,6 +1,6 @@
 class WebSocketService {
   constructor() {
-    this.url = process.env.VUE_APP_SERVER + "/ws";
+    this.url = process.env.VUE_APP_SERVER + "ws";
     this.socket = null;
     this.forcedClose = false;             // When true, stops reconnection attempts.
     this.reconnectInterval = 5000;          // Initial reconnection delay (in ms).
