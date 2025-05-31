@@ -56,18 +56,34 @@
             clearable
           />
           <v-text-field
+            v-if="editingCredential"
             v-model="form.HH_RU_ACCESS_TOKEN"
             label="Access Token"
-            :rules="[rules.required]"
+
             clearable
           />
           <v-text-field
+            v-if="editingCredential"
             v-model="form.HH_RU_REFRESH_TOKEN"
             label="Refresh Token"
-            :rules="[rules.required]"
+
             clearable
           />
+            <v-text-field
+                v-model="form.HH_RU_REDIRECT_URI"
+                label="Redirect URI"
+                :rules="[rules.required]"
+                clearable
+            />
+
         </v-form>
+        <v-col v-if="editingCredential">
+            <v-row justify="center">
+                <v-btn class="mr-5" color="primary" @click="getHHRuCode">получить code</v-btn>
+                <v-btn class="ml-5" color="primary" @click="code_dialog=true">получить токены</v-btn>
+            </v-row>
+        </v-col>
+        
       </v-card-text>
       <v-card-actions>
         <v-spacer />
@@ -76,7 +92,7 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
-
+  
   <!-- Delete Confirmation Dialog -->
   <v-dialog v-model="confirmDeleteDialog" max-width="400px">
     <v-card>
@@ -92,6 +108,26 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
+
+  <!-- Dialog for entering code -->
+    <v-dialog v-model="code_dialog" max-width="600px">
+        <v-card>
+        <v-card-title class="text-h5">Введите код</v-card-title>
+        <v-card-text>
+            <v-text-field
+            v-model="code"
+            label="Код"
+            :rules="[rules.required]"
+            clearable
+            />
+        </v-card-text>
+        <v-card-actions>
+            <v-spacer />
+            <v-btn text @click="code_dialog = false">Отмена</v-btn>
+            <v-btn color="primary" @click="getHHRuTokens(code)">Получить токены</v-btn>
+        </v-card-actions>
+        </v-card>
+    </v-dialog>
 </template>
 
 <script>
@@ -102,13 +138,16 @@ export default {
   data() {
     return {
       headers: [
-        { title: "Client ID", key: "HH_RU_CLIENT_ID" },
-        { title: "Client Secret", key: "HH_RU_CLIENT_SECRET" },
         { title: "Access Token", key: "HH_RU_ACCESS_TOKEN" },
         { title: "Refresh Token", key: "HH_RU_REFRESH_TOKEN" },
+        { title: "Client ID", key: "HH_RU_CLIENT_ID" },
+        { title: "Client Secret", key: "HH_RU_CLIENT_SECRET" },
+        { title: "Redirect URI", key: "HH_RU_REDIRECT_URI" },
         { title: "", key: "edit", sortable: false },
         { title: "", key: "delete", sortable: false },
       ],
+      code: "",
+      code_dialog: false,
       editDialog: false,
       confirmDeleteDialog: false,
       editingCredential: null,
@@ -118,6 +157,7 @@ export default {
         HH_RU_CLIENT_SECRET: "",
         HH_RU_ACCESS_TOKEN: "",
         HH_RU_REFRESH_TOKEN: "",
+        HH_RU_REDIRECT_URI: "", 
       },
       valid: false,
       rules: {
@@ -126,6 +166,9 @@ export default {
     };
   },
   methods: {
+
+    
+
     credentials() {
       return this.$store.state.hh_ru_credentials.data || [];
     },
@@ -135,12 +178,47 @@ export default {
     errorMessage() {
       return this.$store.state.hh_ru_credentials.error;
     },
-    ...mapActions("hh_ru_credentials", [
-      "getHhRuCredentials",
-      "createHhRuCredentials",
-      "updateHhRuCredentials",
-      "deleteHhRuCredentials",
-    ]),
+    ...mapActions({
+      getHhRuCredentials: "hh_ru_credentials/getHhRuCredentials",
+      createHhRuCredentials: "hh_ru_credentials/createHhRuCredentials",
+      updateHhRuCredentials: "hh_ru_credentials/updateHhRuCredentials",
+      deleteHhRuCredentials: "hh_ru_credentials/deleteHhRuCredentials",
+      requestHHRuTokens: "hh_ru_credentials/requestHHRuTokens",
+    }),
+    getHHRuCode() {
+      const clientId = this.form.HH_RU_CLIENT_ID;
+      const redirectUri = this.form.HH_RU_REDIRECT_URI;
+      if (!clientId || !redirectUri) {
+        this.$toast.error("Client ID и Redirect URI обязательны для получения кода.");
+        return;
+      }
+      const url = `https://hh.ru/oauth/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}`;
+      window.open(url, "_blank");
+    },
+    async getHHRuTokens(code) {
+      const client_id = this.form.HH_RU_CLIENT_ID;
+      const client_secret = this.form.HH_RU_CLIENT_SECRET;
+      const redirect_uri = this.form.HH_RU_REDIRECT_URI;
+
+      if (!client_id || !client_secret || !redirect_uri || !code) {
+        this.$toast.error("Все поля обязательны для получения токенов.");
+        return;
+      }
+
+      // Здесь вызов API для получения токенов
+      console.log("Получение токенов с кодом:", code);
+        const payload = {
+            code,
+            client_id,
+            client_secret,
+            redirect_uri,
+        }
+        const response = await this.requestHHRuTokens(payload)
+        this.code_dialog = false;
+        this.form.HH_RU_ACCESS_TOKEN = response.access_token;
+        this.form.HH_RU_REFRESH_TOKEN = response.refresh_token;
+        console.log("Response:", response);
+    },
     openCreateDialog() {
       this.editingCredential = null;
       this.form = {

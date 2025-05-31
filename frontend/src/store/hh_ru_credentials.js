@@ -1,4 +1,5 @@
 import instance from "@/middlewares";
+import axios from "axios";
 
 export default {
   name: "hh_ru_credentials",
@@ -87,5 +88,35 @@ export default {
         commit("setLoading", false);
       }
     },
+
+    async requestHHRuTokens({ commit }, payload) {
+        commit("setLoading", true);
+        commit("setError", null);
+        try {
+        const response = await axios.post(
+            "https://hh.ru/oauth/token",
+
+            {
+                headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                params: {
+                    grant_type:     "authorization_code",
+                    client_id:      payload.client_id,
+                    client_secret:  payload.client_secret,
+                    code:           payload.code,
+                    redirect_uri:   payload.redirect_uri,
+                },
+            }
+        );
+        return response.data;
+        } catch (err) {
+        commit("setError", err.message || "Error fetching tokens");
+        throw err;
+        } finally {
+        commit("setLoading", false);
+        }
+    },
+
   },
 };
