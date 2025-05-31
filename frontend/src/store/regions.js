@@ -88,15 +88,4 @@ export default {
       }
     },
   },
-  getters: {
-    allRegions(state) {
-      return state.data;
-    },
-    isLoading(state) {
-      return state.loading;
-    },
-    errorMessage(state) {
-      return state.error;
-    },
-  },
 };

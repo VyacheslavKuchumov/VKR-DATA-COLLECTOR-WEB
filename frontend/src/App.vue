@@ -21,9 +21,13 @@
             <v-list-item-title>Главная</v-list-item-title>
           </v-list-item>
 
-          
           <v-list-item 
             to="/"
+            title="Сбор данных с hh.ru">
+          </v-list-item>
+          
+          <v-list-item 
+            to="/hh-ru-credentials"
             title="Реквизиты к hh.ru">
           </v-list-item>
           <v-list-item 

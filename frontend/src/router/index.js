@@ -4,8 +4,7 @@ import instance from "@/middlewares";
 import HomeView from "@/views/HomeView.vue";
 import RegionsView from "@/views/spravochniki/RegionsView.vue";
 import WebSocketTest from "@/views/WebsocketTest.vue";
-
-
+import HHRuCredentialsView from "@/views/spravochniki/HHRuCredentialsView.vue";
 
 
 const routes = [
@@ -24,6 +23,11 @@ const routes = [
     path: "/regions",
     name: "regions",
     component: RegionsView,
+  },
+  {
+    path: "/hh-ru-credentials",
+    name: "hh-ru-credentials",
+    component: HHRuCredentialsView,
   },
  
   

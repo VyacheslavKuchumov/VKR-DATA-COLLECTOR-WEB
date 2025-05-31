@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.websocket.websocketEndpoint import router as websocket_router
 from app.routers.student_router import router as student_router
 from app.routers.region_router import router as region_router
+from app.routers.hh_ru_credentials_router import router as hh_ru_credentials_router
 
 
 
@@ -32,6 +33,7 @@ app.add_middleware(
 # Include routers
 app.include_router(student_router, prefix="/students", tags=["students"])
 app.include_router(region_router, prefix="/regions", tags=["regions"])
+app.include_router(hh_ru_credentials_router, prefix="/hh-ru-credentials", tags=["hh_ru_credentials"])
 
 
 # websockets

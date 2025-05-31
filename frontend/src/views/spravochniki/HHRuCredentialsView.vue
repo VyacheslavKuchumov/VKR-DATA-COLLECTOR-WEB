@@ -1,7 +1,7 @@
 <template>
   <v-card max-width="800" class="elevation-0 mt-5 ml-auto mr-auto">
     <v-card-title class="text-wrap" align="center">
-      Управление регионами
+      Управление секретами hh.ru
     </v-card-title>
   </v-card>
 
@@ -14,7 +14,7 @@
     <v-container>
       <v-data-table-server
         :headers="headers"
-        :items="regions()"
+        :items="credentials()"
         :loading="isLoading()"
         :items-per-page="-1"
         hide-default-footer
@@ -36,22 +36,34 @@
   </v-card>
 
   <!-- Create / Edit Dialog -->
-  <v-dialog v-model="editDialog" max-width="450px">
+  <v-dialog v-model="editDialog" max-width="600px">
     <v-card>
       <v-card-title class="text-h5">
-        {{ editingRegion ? "Редактировать регион" : "Создать регион" }}
+        {{ editingCredential ? "Редактировать Credential" : "Создать Credential" }}
       </v-card-title>
       <v-card-text>
-        <v-form ref="regionForm" v-model="valid" @submit.prevent="saveRegion">
+        <v-form ref="form" v-model="valid" @submit.prevent="saveCredential">
           <v-text-field
-            v-model="regionForm.region_name"
-            label="Название региона"
+            v-model="form.HH_RU_CLIENT_ID"
+            label="Client ID"
             :rules="[rules.required]"
             clearable
           />
           <v-text-field
-            v-model="regionForm.country"
-            label="Страна"
+            v-model="form.HH_RU_CLIENT_SECRET"
+            label="Client Secret"
+            :rules="[rules.required]"
+            clearable
+          />
+          <v-text-field
+            v-model="form.HH_RU_ACCESS_TOKEN"
+            label="Access Token"
+            :rules="[rules.required]"
+            clearable
+          />
+          <v-text-field
+            v-model="form.HH_RU_REFRESH_TOKEN"
+            label="Refresh Token"
             :rules="[rules.required]"
             clearable
           />
@@ -60,7 +72,7 @@
       <v-card-actions>
         <v-spacer />
         <v-btn text @click="closeEditDialog">Отмена</v-btn>
-        <v-btn color="primary" :disabled="!valid" @click="saveRegion">Сохранить</v-btn>
+        <v-btn color="primary" :disabled="!valid" @click="saveCredential">Сохранить</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -70,8 +82,8 @@
     <v-card>
       <v-card-title class="text-h5">Подтвердите удаление</v-card-title>
       <v-card-text>
-        Вы уверены, что хотите удалить регион
-        «{{ regionToDelete?.region_name }}»?
+        Вы уверены, что хотите удалить Credential
+        «{{ credentialToDelete?.HH_RU_CLIENT_ID }}»?
       </v-card-text>
       <v-card-actions>
         <v-spacer />
@@ -86,87 +98,95 @@
 import { mapActions } from "vuex";
 
 export default {
-  name: "RegionsView",
+  name: "HHRuCredentialsView",
   data() {
     return {
       headers: [
-        { title: "Регион", key: "region_name" },
-        { title: "Страна", key: "country" },
+        { title: "Client ID", key: "HH_RU_CLIENT_ID" },
+        { title: "Client Secret", key: "HH_RU_CLIENT_SECRET" },
+        { title: "Access Token", key: "HH_RU_ACCESS_TOKEN" },
+        { title: "Refresh Token", key: "HH_RU_REFRESH_TOKEN" },
         { title: "", key: "edit", sortable: false },
         { title: "", key: "delete", sortable: false },
       ],
       editDialog: false,
       confirmDeleteDialog: false,
-      editingRegion: null,
-      regionToDelete: null,
-      regionForm: { region_name: "", country: "" },
+      editingCredential: null,
+      credentialToDelete: null,
+      form: {
+        HH_RU_CLIENT_ID: "",
+        HH_RU_CLIENT_SECRET: "",
+        HH_RU_ACCESS_TOKEN: "",
+        HH_RU_REFRESH_TOKEN: "",
+      },
       valid: false,
       rules: {
         required: (v) => !!v || "Это поле обязательно",
       },
     };
   },
-  computed: {
-
-  },
   methods: {
-    regions() {
-      return this.$store.state.regions.data || [];
+    credentials() {
+      return this.$store.state.hh_ru_credentials.data || [];
     },
     isLoading() {
-      return this.$store.state.regions.isLoading;
+      return this.$store.state.hh_ru_credentials.loading;
     },
     errorMessage() {
-      return this.$store.state.regions.errorMessage;
+      return this.$store.state.hh_ru_credentials.error;
     },
-    ...mapActions({
-      fetchData: "regions/getRegions",
-      createRegion: "regions/createRegion",
-      updateRegion: "regions/updateRegion",
-      deleteRegion: "regions/deleteRegion",
-    }),
-
+    ...mapActions("hh_ru_credentials", [
+      "getHhRuCredentials",
+      "createHhRuCredentials",
+      "updateHhRuCredentials",
+      "deleteHhRuCredentials",
+    ]),
     openCreateDialog() {
-      this.editingRegion = null;
-      this.regionForm = { region_name: "", country: "" };
+      this.editingCredential = null;
+      this.form = {
+        HH_RU_CLIENT_ID: "",
+        HH_RU_CLIENT_SECRET: "",
+        HH_RU_ACCESS_TOKEN: "",
+        HH_RU_REFRESH_TOKEN: "",
+      };
       this.editDialog = true;
     },
-    openEditDialog(region) {
-      this.editingRegion = region;
-      this.regionForm = { ...region };
+    openEditDialog(item) {
+      this.editingCredential = item;
+      this.form = { ...item };
       this.editDialog = true;
     },
     closeEditDialog() {
       this.editDialog = false;
-      this.regionForm = { region_name: "", country: "" };
+      this.valid = false;
     },
-    async saveRegion() {
-      const payload = { ...this.regionForm };
-      if (this.editingRegion) {
-        await this.updateRegion({ id: this.editingRegion.id, payload });
+    async saveCredential() {
+      const payload = { ...this.form };
+      if (this.editingCredential) {
+        await this.updateHhRuCredentials({ id: this.editingCredential.id, payload });
       } else {
-        await this.createRegion(payload);
+        await this.createHhRuCredentials(payload);
       }
-      await this.fetchData();
+      await this.getHhRuCredentials();
       this.closeEditDialog();
     },
-    confirmDelete(region) {
-      this.regionToDelete = region;
+    confirmDelete(item) {
+      this.credentialToDelete = item;
       this.confirmDeleteDialog = true;
     },
     closeConfirmDialog() {
       this.confirmDeleteDialog = false;
-      this.regionToDelete = null;
+      this.credentialToDelete = null;
     },
     async deleteConfirmed() {
-      if (!this.regionToDelete) return;
-      await this.deleteRegion(this.regionToDelete.id);
-      await this.fetchData();
+      if (!this.credentialToDelete) return;
+      await this.deleteHhRuCredentials(this.credentialToDelete.id);
+      await this.getHhRuCredentials();
       this.closeConfirmDialog();
     },
   },
   async created() {
-    await this.fetchData();
+    await this.getHhRuCredentials();
   },
 };
 </script>
