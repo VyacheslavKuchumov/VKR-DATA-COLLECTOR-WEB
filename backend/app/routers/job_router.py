@@ -2,17 +2,17 @@ from fastapi import APIRouter, BackgroundTasks
 from typing import List
 
 from app.controllers.job_controller import create_job, list_jobs, get_job, delete_job
-from app.models.job_model import JobModel
+from app.models.job_model import JobModel, CreateJobModel
 
 router = APIRouter()
 
 
 @router.post("/", response_model=JobModel)
-async def post_job(background_tasks: BackgroundTasks):
+async def post_job(background_tasks: BackgroundTasks, data: CreateJobModel):
     """
     Start a new background job; returns the Job record (including created_at).
     """
-    return await create_job(background_tasks)
+    return await create_job(background_tasks, data)
 
 
 @router.get("/", response_model=List[JobModel])

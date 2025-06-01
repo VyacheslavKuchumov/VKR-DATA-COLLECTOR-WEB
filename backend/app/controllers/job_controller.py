@@ -8,12 +8,13 @@ from datetime import datetime
 from fastapi.responses import Response
 from fastapi import BackgroundTasks, HTTPException, status
 from app.database import jobs_collection
+from app.database import hh_ru_api_data_collection
 from app.websocket.connectionManager import manager
-from app.models.job_model import JobModel
-from app.scripts.test_job import TestProgram
+from app.models.job_model import JobModel, CreateJobModel
+from app.scripts.hh_ru_scrape import ApiHhRu
 
 
-async def run_and_stream(job_id: str):
+async def run_and_stream(raw_job):
     """
     Runs TestProgram.run() in a background thread, captures each print()
     into an asyncio.Queue, then in the async context broadcasts & logs
@@ -21,7 +22,7 @@ async def run_and_stream(job_id: str):
     """
     # 1) mark as running
     await jobs_collection.update_one(
-        {"job_id": job_id},
+        {"job_id": raw_job.job_id},
         {"$set": {"status": "running"}}
     )
 
@@ -39,13 +40,14 @@ async def run_and_stream(job_id: str):
         except asyncio.QueueFull:
             pass
         # still print to server console
-        orig_print(f"[{job_id}]", line)
+        orig_print(f"[{raw_job.job_id}]", line)
 
     builtins.print = intercept_print
-
+    hh_ru_scraper = ApiHhRu(areas=raw_job.region['region_name'], token=raw_job.credentials['HH_RU_ACCESS_TOKEN'], collection=hh_ru_api_data_collection)
+    
     # 4) schedule the blocking run() in a separate thread
     worker_task = asyncio.create_task(
-        asyncio.to_thread(TestProgram().run)
+        asyncio.to_thread(hh_ru_scraper.fetch_and_store_vacancies())
     )
 
     exit_code = 0
@@ -60,9 +62,9 @@ async def run_and_stream(job_id: str):
                 continue
 
             # broadcast & log
-            await manager.broadcast(job_id, line)
+            await manager.broadcast(raw_job.job_id, line)
             await jobs_collection.update_one(
-                {"job_id": job_id},
+                {"job_id": raw_job.job_id},
                 {"$push": {"logs":{"text": line, "timestamp": datetime.utcnow().isoformat()}}}
             )
 
@@ -70,10 +72,10 @@ async def run_and_stream(job_id: str):
         await worker_task
     except Exception as e:
         exit_code = 1
-        err_line = f"❌ Exception in TestProgram: {e}"
-        await manager.broadcast(job_id, err_line)
+        err_line = f"❌ Exception in program: {e}"
+        await manager.broadcast(raw_job.job_id, err_line)
         await jobs_collection.update_one(
-            {"job_id": job_id},
+            {"job_id": raw_job.job_id},
             {"$push": {"logs": {"text": err_line, "timestamp": datetime.utcnow().isoformat()}}}
         )
     finally:
@@ -82,10 +84,10 @@ async def run_and_stream(job_id: str):
 
     # 6) wrap up
     now = datetime.utcnow()
-    final_msg = f"[{job_id}] exited with code {exit_code}"
-    await manager.broadcast(job_id, final_msg)
+    final_msg = f"[{raw_job.job_id}] exited with code {exit_code}"
+    await manager.broadcast(raw_job.job_id, final_msg)
     await jobs_collection.update_one(
-        {"job_id": job_id},
+        {"job_id": raw_job.job_id},
         {
             "$set": {
                 "status": "finished",
@@ -97,11 +99,7 @@ async def run_and_stream(job_id: str):
     )
 
 
-async def create_job(background_tasks: BackgroundTasks) -> JobModel:
-    """
-    Inserts a pending job (with empty logs), schedules run_and_stream,
-    and returns the newly created JobModel.
-    """
+async def create_job(background_tasks: BackgroundTasks, data: CreateJobModel) -> JobModel:
     job_id = str(uuid.uuid4())
     now = datetime.utcnow()
 
@@ -111,11 +109,14 @@ async def create_job(background_tasks: BackgroundTasks) -> JobModel:
         "created_at": now,
         "finished_at": None,
         "exit_code": None,
-        "logs": []              # initialize logs array
+        "logs": [],
+        "region": data.region,         # already there
+        "credentials": data.credentials # ← add this
     })
-
-    background_tasks.add_task(run_and_stream, job_id)
-
+    raw_doc = await jobs_collection.find_one({"job_id": job_id})
+    raw_job = JobModel(**raw_doc)           
+    
+    background_tasks.add_task(run_and_stream, raw_job)
     raw = await jobs_collection.find_one({"job_id": job_id})
     return JobModel(**raw)
 

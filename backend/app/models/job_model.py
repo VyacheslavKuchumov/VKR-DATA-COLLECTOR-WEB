@@ -22,7 +22,9 @@ class JobModel(BaseModel):
     )
     exit_code: Optional[int] = Field(None, description="process exit code")
     logs: Optional[list] = Field(None, description="optional logs")
-
+    region: dict = Field(None, description="region associated with the job")
+    credentials: dict = Field(None, description="credentials used for the job")
+    
     model_config = ConfigDict(
         populate_by_name=True,
         arbitrary_types_allowed=True,
@@ -39,20 +41,14 @@ class JobModel(BaseModel):
     )
 
 class CreateJobModel(BaseModel):
-    """
-    What your POST /jobs endpoint expects.
-    Timestamps & _id filled in server-side.
-    """
-    job_id: str = Field(..., description="UUID for this job")
-    status: Optional[str] = Field("pending", description="initial status")
+    region: dict
+    credentials: dict
 
     model_config = ConfigDict(
-        arbitrary_types_allowed=True,
-        json_encoders={ datetime: lambda dt: dt.isoformat() },
         json_schema_extra={
             "example": {
-                "job_id": "123e4567-e89b-12d3-a456-426614174000",
-                "status": "pending"
+                "region": { "name": "us-east-1", "zone": "1a" },
+                "credentials": { "api_key": "abc123", "secret": "…" }
             }
         },
     )
