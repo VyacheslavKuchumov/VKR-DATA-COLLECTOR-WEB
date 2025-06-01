@@ -1,14 +1,15 @@
 import os
 import requests
-import logging
 import time
 from pprint import pprint
 from datetime import datetime
 
 
+from pymongo import MongoClient
 
-# Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+client = MongoClient(os.getenv('MONGODB_URI'))
+
+db = client.app_db.hh_ru_api_data
 
 class ApiHhRu:
     BASE_URL = 'https://api.hh.ru'
@@ -18,7 +19,6 @@ class ApiHhRu:
 
     def __init__(self, areas, token, collection):
         self.ACCESS_TOKEN = token
-        self.db = collection  # MongoDB collection for storing vacancies
         self.headers = {'Authorization': f'Bearer {self.ACCESS_TOKEN}'}
         self.AREAS = areas
         self.date = datetime.utcnow().strftime('%d.%m.%Y')
@@ -31,7 +31,7 @@ class ApiHhRu:
         try:
             response = requests.get(url, headers=self.headers, params=params)
             if response.status_code == 401:  # Unauthorized, possibly token expired
-                logging.info("Access token expired. Attempting to refresh token.")
+                print("INFO: Access token expired. Attempting to refresh token.")
                 if self.refresh_access_token():
                     response = requests.get(url, headers=self.headers, params=params)
                 else:
@@ -39,7 +39,7 @@ class ApiHhRu:
             response.raise_for_status()
             return response.json()
         except requests.exceptions.RequestException as e:
-            logging.error(f"Request failed: {e}")
+            print(f"ERROR: Request failed: {e}")
             return None
 
     def fetch_countries(self):
@@ -55,7 +55,7 @@ class ApiHhRu:
         """Fetches areas based on the specified country."""
         country_url = self.find_country_url(self.COUNTRY)
         if not country_url:
-            logging.error("Country not found.")
+            print("ERROR: Country not found.")
             return []
 
         areas = self._get(country_url)
@@ -87,11 +87,11 @@ class ApiHhRu:
         vacancies, page, total_pages = [], 0, 1
 
         while page < total_pages:
-            logging.info(f"Fetching page {page} for area {area_id} and role {professional_role_id}")
+            print(f"INFO: Fetching page {page} for area {area_id} and role {professional_role_id}")
             data = self.get_vacancies(area_id, professional_role_id, page)
 
             if not data or 'items' not in data:
-                logging.warning("No vacancies found or invalid data.")
+                print("WARNING: No vacancies found or invalid data.")
                 break
 
             vacancies.extend(data['items'])
@@ -108,28 +108,28 @@ class ApiHhRu:
             vacancy['entry_date'] = self.date
             vacancy['area_name'] = area_name
 
-            if self.db.find_one({"id": vacancy['id'], "entry_date": vacancy['entry_date']}):
+            if db.find_one({"id": vacancy['id'], "entry_date": vacancy['entry_date']}):
                 duplicates += 1
                 continue
 
             try:
-                self.db.insert_one(vacancy)
+                db.insert_one(vacancy)
                 inserted += 1
             except Exception as e:
-                logging.error(f"Error saving vacancy {vacancy['url']}: {e}")
+                print(f"ERROR: Error saving vacancy {vacancy['url']}: {e}")
 
-        logging.info(f"Inserted: {inserted}, Duplicates: {duplicates}")
+        print(f"INFO: Inserted: {inserted}, Duplicates: {duplicates}")
 
     def fetch_and_store_vacancies(self):
         """Fetches and stores vacancies for all areas and roles."""
         areas = self.fetch_areas()
         if not areas:
-            logging.error("No areas found.")
+            print("ERROR: No areas found.")
             return
 
         professional_roles = self.fetch_professional_roles()
         if not professional_roles:
-            logging.error("No professional roles found.")
+            print("ERROR: No professional roles found.")
             return
 
         # Initialize a set to store unique role IDs
@@ -147,11 +147,9 @@ class ApiHhRu:
                 filtered_roles.append({'roles': unique_roles_in_category})
 
         for area in areas:
-            logging.info(f"Processing area {area['name']} (ID: {area['id']})")
+            print(f"INFO: Processing area {area['name']} (ID: {area['id']})")
             for category in filtered_roles:
                 for role in category['roles']:
-                    logging.info(f"Fetching vacancies for role {role['name']} (ID: {role['id']})")
+                    print(f"INFO: Fetching vacancies for role {role['name']} (ID: {role['id']})")
                     vacancies = self.fetch_all_vacancies(area['id'], role['id'])
                     self.save_vacancies_to_db(vacancies, area['name'])
-
-

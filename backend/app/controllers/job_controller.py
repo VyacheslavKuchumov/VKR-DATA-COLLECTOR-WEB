@@ -7,8 +7,7 @@ from pathlib import Path
 from datetime import datetime
 from fastapi.responses import Response
 from fastapi import BackgroundTasks, HTTPException, status
-from app.database import jobs_collection
-from app.database import hh_ru_api_data_collection
+from app.database import jobs_collection, hh_ru_api_data_collection
 from app.websocket.connectionManager import manager
 from app.models.job_model import JobModel, CreateJobModel
 from app.scripts.hh_ru_scrape import ApiHhRu
@@ -16,9 +15,9 @@ from app.scripts.hh_ru_scrape import ApiHhRu
 
 async def run_and_stream(raw_job):
     """
-    Runs TestProgram.run() in a background thread, captures each print()
-    into an asyncio.Queue, then in the async context broadcasts & logs
-    each line in real time, and finally updates the job status.
+    Runs ApiHhRu.fetch_and_store_vacancies() in a background thread,
+    captures each print() into an asyncio.Queue, then in the async context
+    broadcasts & logs each line in real time, and finally updates the job status.
     """
     # 1) mark as running
     await jobs_collection.update_one(
@@ -28,26 +27,29 @@ async def run_and_stream(raw_job):
 
     # 2) set up a queue to shuttle lines from the thread into async land
     q: asyncio.Queue[str] = asyncio.Queue()
+    loop = asyncio.get_running_loop()
 
     # 3) hijack print() in the worker thread to put lines into the queue
     orig_print = builtins.print
 
     def intercept_print(*args, **kwargs):
         line = " ".join(str(a) for a in args)
-        # push into queue for the async loop to pick up
-        try:
-            q.put_nowait(line)
-        except asyncio.QueueFull:
-            pass
+        # thread-safe enqueue
+        loop.call_soon_threadsafe(q.put_nowait, line)
         # still print to server console
         orig_print(f"[{raw_job.job_id}]", line)
 
     builtins.print = intercept_print
-    hh_ru_scraper = ApiHhRu(areas=raw_job.region['region_name'], token=raw_job.credentials['HH_RU_ACCESS_TOKEN'], collection=hh_ru_api_data_collection)
-    
-    # 4) schedule the blocking run() in a separate thread
+
+    hh_ru_scraper = ApiHhRu(
+        areas=raw_job.region['region_name'],
+        token=raw_job.credentials['HH_RU_ACCESS_TOKEN'],
+        collection=hh_ru_api_data_collection
+    )
+
+    # 4) schedule the blocking fetch in a separate thread
     worker_task = asyncio.create_task(
-        asyncio.to_thread(hh_ru_scraper.fetch_and_store_vacancies())
+        asyncio.to_thread(hh_ru_scraper.fetch_and_store_vacancies)
     )
 
     exit_code = 0
@@ -65,11 +67,12 @@ async def run_and_stream(raw_job):
             await manager.broadcast(raw_job.job_id, line)
             await jobs_collection.update_one(
                 {"job_id": raw_job.job_id},
-                {"$push": {"logs":{"text": line, "timestamp": datetime.utcnow().isoformat()}}}
+                {"$push": {"logs": {"text": line, "timestamp": datetime.utcnow().isoformat()}}}
             )
 
         # if the worker raised, rethrow to catch below
         await worker_task
+
     except Exception as e:
         exit_code = 1
         err_line = f"❌ Exception in program: {e}"
@@ -78,6 +81,7 @@ async def run_and_stream(raw_job):
             {"job_id": raw_job.job_id},
             {"$push": {"logs": {"text": err_line, "timestamp": datetime.utcnow().isoformat()}}}
         )
+
     finally:
         # restore original print()
         builtins.print = orig_print
@@ -94,8 +98,7 @@ async def run_and_stream(raw_job):
                 "finished_at": now,
                 "exit_code": exit_code
             },
-            "$push": {"logs": {"text":final_msg, "timestamp": now.isoformat()}}
-        }
+            "$push": {"logs": {"text": final_msg, "timestamp": now.isoformat()}}}
     )
 
 
@@ -110,12 +113,12 @@ async def create_job(background_tasks: BackgroundTasks, data: CreateJobModel) ->
         "finished_at": None,
         "exit_code": None,
         "logs": [],
-        "region": data.region,         # already there
-        "credentials": data.credentials # ← add this
+        "region": data.region,
+        "credentials": data.credentials
     })
     raw_doc = await jobs_collection.find_one({"job_id": job_id})
-    raw_job = JobModel(**raw_doc)           
-    
+    raw_job = JobModel(**raw_doc)
+
     background_tasks.add_task(run_and_stream, raw_job)
     raw = await jobs_collection.find_one({"job_id": job_id})
     return JobModel(**raw)
@@ -140,14 +143,14 @@ async def get_job(job_id: str) -> JobModel:
     return JobModel(**raw)
 
 
-async def delete_job(job_id: str) -> None:
+async def delete_job(job_id: str) -> Response:
     """
     Deletes a job by its UUID; raises 404 if not found.
     """
     result = await jobs_collection.delete_one({"job_id": job_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Job not found")
-    
+
     # Also disconnect any WebSocket connections for this job
     manager.disconnect(job_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
