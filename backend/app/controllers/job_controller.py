@@ -22,10 +22,12 @@ async def run_and_stream(job_id: str):
     # 1) locate your script file:
     BASE_DIR = Path(__file__).resolve().parent.parent  # e.g. /path/to/app
     script_path = BASE_DIR / "scripts" / "test_job.py"
-
+    print(f"Script path: {script_path}")
     if not script_path.exists():
         # fail fast if someone mis-named it
+        print(f"Script not found: {script_path}")
         await manager.broadcast(job_id, f"❌ Script not found: {script_path}")
+        await jobs_collection.delete_one({"job_id": job_id})
         return
 
     # 2) launch the subprocess with full path
@@ -40,6 +42,7 @@ async def run_and_stream(job_id: str):
     # 3) stream its output exactly as before
     while True:
         line = await process.stdout.readline()
+        print(f"[{job_id}] {line.decode().rstrip()}")
         if not line:
             break
         await manager.broadcast(job_id, line.decode().rstrip())
@@ -57,8 +60,8 @@ async def run_and_stream(job_id: str):
     )
 
     final_msg = f"[{job_id}] exited with code {exit_code}"
+    print(final_msg)
     await manager.broadcast(job_id, final_msg)
-    manager.cleanup(job_id)
 
 
 async def create_job(background_tasks: BackgroundTasks) -> JobModel:

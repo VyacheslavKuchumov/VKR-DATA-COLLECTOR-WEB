@@ -15,13 +15,13 @@ async def websocket_endpoint(websocket: WebSocket, job_id: str):
 
     try:
         while True:
-            # (optional) receive from client
-            data = await websocket.receive_text()
-            # let your controller do something if needed
-            response = await process_message(data)
+            # # (optional) receive from client
+            # data = await websocket.receive_text()
+            # # let your controller do something if needed
+            # response = await process_message(data)
 
             # 2) broadcast to everyone listening on this job_id
-            await manager.broadcast(job_id, response)
+            await manager.broadcast(job_id, "hello from server!")
 
     except WebSocketDisconnect:
         # 3) clean up
