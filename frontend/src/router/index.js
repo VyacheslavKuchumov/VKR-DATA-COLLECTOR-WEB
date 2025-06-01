@@ -10,11 +10,11 @@ import JobLogsView from "@/views/hh_ru/JobLogsView.vue";
 
 
 const routes = [
-  {
-    path: "/test",
-    name: "websocket-test",
-    component: WebSocketTest,
-  },
+  // {
+  //   path: "/test",
+  //   name: "websocket-test",
+  //   component: WebSocketTest,
+  // },
   {
     path: "/",
     name: "home",
