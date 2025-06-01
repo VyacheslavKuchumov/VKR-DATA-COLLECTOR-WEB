@@ -8,7 +8,8 @@ export default {
   state: () => ({
     list: [],         // массив заданий
     loading: false,   // индикатор загрузки
-    error: null,      // текст ошибки
+    error: null,
+    job: null      // текст ошибки
   }),
   mutations: {
     setJobs(state, jobs) {
@@ -16,6 +17,10 @@ export default {
     },
     addJob(state, job) {
       state.list.push(job);
+    },
+    addOneJob(state, job) {
+      state.job = null; // сброс предыдущего задания
+      state.job = job;
     },
     updateJob(state, updated) {
       const index = state.list.findIndex(j => j.job_id === updated.job_id);
@@ -70,9 +75,23 @@ export default {
       commit("setError", null);
       try {
         const response = await instance.get(`/api/jobs/${jobId}`);
-        commit("updateJob", response.data);
+        commit("addOneJob", response.data);
       } catch (error) {
         commit("setError", error.message || "Ошибка при получении задания");
+      } finally {
+        commit("setLoading", false);
+      }
+    },
+
+    // Удалить задание
+    async deleteJob({ commit }, jobId) {
+      commit("setLoading", true);
+      commit("setError", null);
+      try {
+        await instance.delete(`/api/jobs/${jobId}`)
+        return jobId; // Возвращаем ID удаленного задания
+      } catch (error) {
+        commit("setError", error.message || "Ошибка при удалении задания");
       } finally {
         commit("setLoading", false);
       }
@@ -94,6 +113,7 @@ export default {
         .catch(err => console.error("WS connect failed:", err));
         return ws;  // so caller can later call ws.disconnect()
     },
+
 
     // Отключить WebSocket
     unsubscribeLogs(_, ws) {

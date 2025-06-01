@@ -27,28 +27,24 @@
           <span>{{ item.status }}</span>
         </template>
 
-        <template #item.actions="{ item }">
+        <template #item.see="{ item }">
           <v-btn size="small" color="primary" class="mr-2" @click="viewLogs(item)">
             <v-icon>mdi-eye</v-icon>
+          </v-btn>
+        </template>
+        <template #item.delete="{ item }">
+          <v-btn
+            size="small"
+            color="error"
+            @click="deleteJob(item.job_id)"
+          >
+            <v-icon>mdi-delete</v-icon>
           </v-btn>
         </template>
       </v-data-table-server>
     </v-container>
   </v-card>
 
-  <!-- WebSocket Logs Viewer -->
-  <v-dialog v-model="logDialog" max-width="800px">
-    <v-card>
-      <v-card-title class="text-h5">Логи задания #{{ activeJob?.job_id }}</v-card-title>
-      <v-card-text>
-        <v-textarea v-model="logText" auto-grow readonly rows="10" />
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer />
-        <v-btn text @click="closeLogs">Закрыть</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
 </template>
 
 <script>
@@ -61,7 +57,8 @@ export default {
       headers: [
         { title: "ID", key: "job_id" },
         { title: "Статус", key: "status" },
-        { title: "Действия", key: "actions", sortable: false },
+        { title: "", key: "see", sortable: false },
+        // { title: "", key: "delete", sortable: false },
       ],
       logDialog: false,
       logText: "",
@@ -85,8 +82,8 @@ export default {
     ...mapActions({
         fetchJobs: "jobs/fetchJobs",
         startJob: "jobs/startJob",
-        subscribeLogs: "jobs/subscribeLogs",
-        unsubscribeLogs: "jobs/unsubscribeLogs",
+        fetchJob: "jobs/fetchJob",
+        deleteJob: "jobs/deleteJob",
     }),
 
     async createJob() {
@@ -97,32 +94,22 @@ export default {
         console.error("Ошибка при создании задания:", e);
       }
     },
-
-    viewLogs(job) {
-      this.activeJob = job;
-      this.logText = "";
-      this.logDialog = true;
-      this.ws = this.subscribeLogs({
-        jobId: job.job_id,
-        onMessage: (data) => {
-          this.logText += data + "\n";
-        },
-      });
+    async deleteJob(jobId) {
+      try {
+        await this.deleteJob(jobId);
+        await this.fetchJobs();
+      } catch (e) {
+        console.error("Ошибка при удалении задания:", e);
+      }
     },
 
-    closeLogs() {
-      this.logDialog = false;
-      if (this.ws) {
-        this.unsubscribeLogs(this.ws);
-        this.ws = null;
-      }
+    viewLogs(job) {
+      this.$router.push(`/job/${job.job_id}`);
     },
   },
   async created() {
     await this.fetchJobs();
   },
-  beforeDestroy() {
-    this.closeLogs(); // Clean up WebSocket if still open
-  },
+
 };
 </script>

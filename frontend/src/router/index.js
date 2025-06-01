@@ -6,6 +6,7 @@ import RegionsView from "@/views/spravochniki/RegionsView.vue";
 import WebSocketTest from "@/views/WebsocketTest.vue";
 import HHRuCredentialsView from "@/views/spravochniki/HHRuCredentialsView.vue";
 import JobsView from "@/views/hh_ru/JobsView.vue";
+import JobLogsView from "@/views/hh_ru/JobLogsView.vue";
 
 
 const routes = [
@@ -34,6 +35,12 @@ const routes = [
     path: "/hh-ru-jobs",
     name: "hh-ru-jobs",
     component: JobsView,
+  },
+  {
+    path: "/job/:jobId",
+    name: "job-logs",
+    component: JobLogsView,
+    props: true, 
   }
  
   

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, BackgroundTasks
 from typing import List
 
-from app.controllers.job_controller import create_job, list_jobs, get_job
+from app.controllers.job_controller import create_job, list_jobs, get_job, delete_job
 from app.models.job_model import JobModel
 
 router = APIRouter()
@@ -29,3 +29,10 @@ async def get_single_job(job_id: str):
     Fetch a single job by its job_id.
     """
     return await get_job(job_id)
+
+@router.delete("/{job_id}", status_code=204)
+async def delete_single_job(job_id: str):
+    """
+    Delete a job by its job_id.
+    """
+    return await delete_job(job_id)

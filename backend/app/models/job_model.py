@@ -21,6 +21,7 @@ class JobModel(BaseModel):
         None, description="when the job completed (if finished)"
     )
     exit_code: Optional[int] = Field(None, description="process exit code")
+    logs: Optional[list] = Field(None, description="optional logs")
 
     model_config = ConfigDict(
         populate_by_name=True,
