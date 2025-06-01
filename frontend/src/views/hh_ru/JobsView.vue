@@ -134,6 +134,8 @@ export default {
     return {
       headers: [
         { title: "ID", key: "job_id" },
+        { title: "Регион", key: "region.region_name" },
+        { title: "Дата создания", key: "created_at" },
         { title: "Статус", key: "status" },
         { title: "", key: "see", sortable: false },
         { title: "", key: "delete", sortable: false },
