@@ -37,7 +37,7 @@
           </v-list-item>
 
           <v-list-item 
-            to="/"
+            to="/forecast"
             title="Прогнозы">
           </v-list-item>
 

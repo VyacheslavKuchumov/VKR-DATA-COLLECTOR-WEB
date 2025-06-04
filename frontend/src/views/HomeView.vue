@@ -104,7 +104,7 @@
                     },
                     { 
                         title: "Прогнозы", 
-                        id: "forecasts", 
+                        id: "forecast", 
                         icon: "mdi-chart-line", 
                         description: "Аналитические отчеты и прогнозные модели",
                         color: "purple-lighten-4",

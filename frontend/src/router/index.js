@@ -6,7 +6,7 @@ import HomeView from "@/views/HomeView.vue";
 import DatasetsView from "@/views/nsi_datasets/DatasetsView.vue";
 import DataParsingView from "@/views/data_parsing/DataParsingView.vue";
 import UsersView from "@/views/users/UsersView.vue";
-
+import ForecastView from "@/views/forecast/ForecastView.vue";
 
 
 const routes = [
@@ -39,7 +39,12 @@ const routes = [
     name: "users",
     component: UsersView,
   },
-
+  // route for forecast
+  {
+    path: "/forecast",
+    name: "forecast",
+    component: ForecastView,
+  },
  
  
   
