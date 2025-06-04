@@ -1,9 +1,8 @@
 <template>
-  <v-container>
+  <v-container class="ml-auto mr-auto" max-width="800">
     <v-row>
       <v-col cols="12">
-        <h1>Добро пожаловать в приложение!</h1>
-        <p>Это главная страница вашего приложения.</p>
+        <h1 class="display-6 font-weight-bold">Главная страница.</h1>
 
       </v-col>
     </v-row>

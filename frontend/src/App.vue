@@ -22,6 +22,27 @@
           </v-list-item>
 
           <v-list-item 
+            to="/"
+            title="Управление пользователями">
+          </v-list-item>
+
+          <v-list-item 
+            to="/datasets"
+            title="НСИ датасеты">
+          </v-list-item>
+
+          <v-list-item 
+            to="/data-parsing"
+            title="Сбор данных">
+          </v-list-item>
+
+          <v-list-item 
+            to="/"
+            title="Прогнозы">
+          </v-list-item>
+
+<!-- 
+          <v-list-item 
             to="/hh-ru-jobs"
             title="Сбор данных с hh.ru">
           </v-list-item>
@@ -33,13 +54,7 @@
           <v-list-item 
             to="/regions"
             title="Регионы для сбора данных">
-          </v-list-item>
-          <v-list-item 
-            to="/"
-            title="Backend сервера">
-          </v-list-item>
-
-
+          </v-list-item> -->
       </v-list>
     </v-navigation-drawer>
     <v-main height="100vh">
