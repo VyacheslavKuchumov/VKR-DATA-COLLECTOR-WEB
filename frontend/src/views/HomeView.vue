@@ -75,7 +75,7 @@
                     { 
                         title: "НСИ датасеты", 
                         id: "datasets", 
-                        icon: "mdi-datasets", 
+                        icon: "mdi-database", 
                         description: "Просмотр и управление нормативно-справочной информацией",
                         color: "green-lighten-4",
                         iconColor: "green-darken-2"
