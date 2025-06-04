@@ -1,5 +1,5 @@
 <template>
-    <v-container max-width="800" class="elevation-0 mt-5 ml-auto mr-auto">
+    <v-container v-if="!$vuetify.display.mobile" max-width="800" class="elevation-0 mt-5 ml-auto mr-auto">
         <v-card-title class="text-wrap text-center justify-center">
             <h1 class="text-h4">Система анализа и прогнозирования кадрового потенциала</h1>
         </v-card-title>
