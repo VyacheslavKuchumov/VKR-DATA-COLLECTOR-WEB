@@ -5,7 +5,7 @@
         </v-card-title>
     </v-container>
 
-    <v-container class="elevation-5 mt-5 ml-auto mr-auto" max-width="1000">
+    <v-container class="elevation-0 mt-5 ml-auto mr-auto" max-width="1000">
         <v-card-text>
             <v-row>
                 <v-col 
