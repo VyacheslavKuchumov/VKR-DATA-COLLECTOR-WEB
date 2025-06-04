@@ -5,7 +5,7 @@ import WebSocketTest from "@/views/WebsocketTest.vue";
 import HomeView from "@/views/HomeView.vue";
 import DatasetsView from "@/views/nsi_datasets/DatasetsView.vue";
 import DataParsingView from "@/views/data_parsing/DataParsingView.vue";
-
+import UsersView from "@/views/users/UsersView.vue";
 
 
 
@@ -32,6 +32,12 @@ const routes = [
     path: "/data-parsing",
     name: "data-parsing",
     component: DataParsingView,
+  },
+  // route for users
+  {
+    path: "/users",
+    name: "users",
+    component: UsersView,
   },
 
  

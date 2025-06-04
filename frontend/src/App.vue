@@ -22,7 +22,7 @@
           </v-list-item>
 
           <v-list-item 
-            to="/"
+            to="/users"
             title="Управление пользователями">
           </v-list-item>
 
