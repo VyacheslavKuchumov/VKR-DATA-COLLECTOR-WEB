@@ -1,5 +1,5 @@
 <template>
-    <v-container max-width="800" class="elevation-0 mt-5 ml-auto mr-auto">
+    <v-container v-if="!$vuetify.display.mobile" max-width="800" class="elevation-0 mt-5 ml-auto mr-auto">
         <v-card-title class="text-wrap" align="center">
             Источники данных
         </v-card-title>
