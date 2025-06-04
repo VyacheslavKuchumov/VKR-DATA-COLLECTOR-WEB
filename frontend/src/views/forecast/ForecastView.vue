@@ -42,9 +42,7 @@
                         label="Тип прогноза"
                         outlined
                         dense
-                        item-title="text"
-                        item-value="value"
-                        return-object
+
                         clearable
                     ></v-select>
                 </v-col>
@@ -214,8 +212,8 @@ export default {
             periods: [1, 3, 5, 10],
             
             forecastTypes: [
-                { text: 'По профессии', value: 'profession' },
-                { text: 'По сфере экономики (ОКВЭД)', value: 'sector' }
+                'profession',
+                'sector'
             ],
             
             professions: [
