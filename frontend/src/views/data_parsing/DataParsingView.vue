@@ -1,9 +1,9 @@
 <template>
-    <v-card max-width="800" class="elevation-0 mt-5 ml-auto mr-auto">
+    <v-container max-width="800" class="elevation-0 mt-5 ml-auto mr-auto">
         <v-card-title class="text-wrap" align="center">
             Источники данных
         </v-card-title>
-    </v-card>
+    </v-container>
 
     <v-container class="elevation-5 mt-5 ml-auto mr-auto" max-width="800">
         <v-toolbar flat color="white">
@@ -24,7 +24,7 @@
                     md="4"
                 >
                     <v-card 
-                        class="pa-4 text-center rounded-lg"
+                        class="pa-4 text-center rounded-lg d-flex flex-column"
                         elevation="3"
                         height="100%"
                     >
@@ -39,7 +39,9 @@
                         <v-card-title class="text-subtitle-1 justify-center text-wrap">
                             {{ source.title }}
                         </v-card-title>
-                        
+                        <v-card-text class="text-center flex-grow-1" height="100%">
+                            <!-- Здесь можно добавить описание источника данных или инструкцию по его использованию. -->
+                        </v-card-text>
                         <v-card-actions class="justify-center">
                             <v-btn 
                                 color="primary" 
