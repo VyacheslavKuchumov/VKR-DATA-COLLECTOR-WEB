@@ -22,7 +22,7 @@
                         :color="section.color"
                         @click="selectSection(section)"
                     >
-                        <div class="d-flex align-center">
+                        <v-container v-if="!$vuetify.display.mobile" class="d-flex align-center">
                             <v-icon 
                                 size="64" 
                                 :color="section.iconColor"
@@ -34,7 +34,20 @@
                             <v-card-title class="text-h6 font-weight-bold text-wrap">
                                 {{ section.title }}
                             </v-card-title>
-                        </div>
+                        </v-container>
+                        <v-container v-else class="d-flex align-center justify-center mb-2">
+                            <v-icon 
+                                size="42" 
+                                :color="section.iconColor"
+                                class="mb-2"
+                            >
+                                {{ section.icon }}
+                            </v-icon>
+                            <v-card-title class="text-h6 font-weight-bold text-center">
+                                {{ section.title }}
+                            </v-card-title>
+                        </v-container>
+                        
 
                         <v-card-text class="mt-2 flex-grow-1">
                             {{ section.description }}
@@ -59,13 +72,14 @@
 </template>
 
 <script>
+
     export default {
         name: "HomeView",
         data() {
             return {
                 sections: [
                     { 
-                        title: "Управление пользователями", 
+                        title: "Пользователи", 
                         id: "users", 
                         icon: "mdi-account-cog", 
                         description: "Управление учетными записями, ролями и правами доступа пользователей системы",
