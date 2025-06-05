@@ -5,7 +5,7 @@
         </v-card-title>
     </v-container>
 
-    <v-container class="elevation-0 mt-5 ml-auto mr-auto" max-width="800">
+    <v-container class="elevation-0 mt-5 ml-auto mr-auto" max-width="1200">
         <v-toolbar flat color="white">
             <v-btn icon="mdi-arrow-left" color="primary" @click="$router.push('/')" />
             <v-toolbar-title v-if="!$vuetify.display.mobile" class="text-subtitle-1 font-weight-bold">
@@ -64,6 +64,9 @@
         data() {
             return {
                 datasets: [
+                    { title: "Кадровые агентства", id: "agencies", icon: "mdi-account-tie" },
+                    { title: "Стратегический план развития региона", id: "region-plan", icon: "mdi-map-legend" },
+                    { title: "Национальная программа развития РФ", id: "national-program", icon: "mdi-star-circle" },
                     { title: "Перечень ФГОС", id: "fgos", icon: "mdi-book-education" },
                     { title: "Профстандарты", id: "profstandards", icon: "mdi-certificate" },
                     { title: "Статотчетность", id: "statistics", icon: "mdi-chart-bar" },
