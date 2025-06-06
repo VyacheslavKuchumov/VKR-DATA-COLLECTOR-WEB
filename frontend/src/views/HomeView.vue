@@ -87,20 +87,20 @@
                         iconColor: "blue-darken-2"
                     },
                     { 
-                        title: "НСИ датасеты", 
-                        id: "datasets", 
-                        icon: "mdi-database", 
-                        description: "Просмотр и управление нормативно-справочной информацией",
-                        color: "green-lighten-4",
-                        iconColor: "green-darken-2"
-                    },
-                    { 
                         title: "Сбор данных", 
                         id: "data-parsing", 
                         icon: "mdi-cloud-download", 
                         description: "Интеграция данных из внешних источников и систем",
                         color: "orange-lighten-4",
                         iconColor: "orange-darken-2"
+                    },
+                    { 
+                        title: "НСИ датасеты", 
+                        id: "datasets", 
+                        icon: "mdi-database", 
+                        description: "Просмотр и управление нормативно-справочной информацией",
+                        color: "green-lighten-4",
+                        iconColor: "green-darken-2"
                     },
                     { 
                         title: "Прогнозы", 

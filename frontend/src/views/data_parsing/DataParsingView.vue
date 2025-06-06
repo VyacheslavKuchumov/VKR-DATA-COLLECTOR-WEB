@@ -27,6 +27,7 @@
                         class="pa-4 text-center rounded-lg d-flex flex-column"
                         elevation="3"
                         height="100%"
+                        @click="selectSource(source)"
                     >
                         <v-icon 
                             size="64" 
@@ -79,8 +80,8 @@
         methods: {
             selectSource(source) {
                 console.log("Сбор данных из источника:", source.title);
-                // Реальная логика сбора данных:
-                // this.$store.dispatch('collectData', source.id);
+                
+                this.$router.push(`/data-parsing/${source.id}`);
             }
         }
     };

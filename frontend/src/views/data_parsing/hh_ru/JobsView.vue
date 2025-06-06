@@ -14,7 +14,7 @@
     <!-- Диалог создания нового задания -->
     <v-dialog v-model="newJobDialog" max-width="600">
       <v-card>
-        <v-card-title>Новый Задание</v-card-title>
+        <v-card-title>Новая задача</v-card-title>
         <v-card-text>
           <!-- Кнопки открытия таблиц выбора -->
           <v-row>
@@ -33,7 +33,7 @@
             </v-col>
             <v-col cols="12" sm="6">
               <v-btn color="primary" @click="openCredentialDialog">
-                Выбрать Credentials
+                Выбрать способ аутентификации
               </v-btn>
             </v-col>
           </v-row>
@@ -75,7 +75,7 @@
     <!-- Диалог выбора Credentials -->
     <v-dialog v-model="credentialDialog" max-width="700">
       <v-card>
-        <v-card-title>Выберите Credentials</v-card-title>
+        <v-card-title>Выберите способ аутентификации</v-card-title>
         <v-card-text>
           <v-data-table-server
             :headers="credentialHeaders"

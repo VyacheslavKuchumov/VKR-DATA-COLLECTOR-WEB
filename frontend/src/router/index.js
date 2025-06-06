@@ -8,6 +8,8 @@ import DataParsingView from "@/views/data_parsing/DataParsingView.vue";
 import UsersView from "@/views/users/UsersView.vue";
 import ForecastView from "@/views/forecast/ForecastView.vue";
 
+import ProfStandardParsingView from "@/views/data_parsing/prof_standard/ProfStandardParsingView.vue";
+import FgosParsingView from "@/views/data_parsing/fgos/FgosParsingView.vue";
 
 const routes = [
   // {
@@ -44,6 +46,18 @@ const routes = [
     path: "/forecast",
     name: "forecast",
     component: ForecastView,
+  },
+  // route for prof standard parsing
+  {
+    path: "/data-parsing/profstandards",
+    name: "prof-standard-parsing",
+    component: ProfStandardParsingView,
+  },
+  // route for fgos parsing
+  {
+    path: "/data-parsing/fgos",
+    name: "fgos-parsing",
+    component: FgosParsingView,
   },
  
  
