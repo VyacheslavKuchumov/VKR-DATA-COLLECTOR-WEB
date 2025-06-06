@@ -1,12 +1,16 @@
 <template>
-  <v-card max-width="800" class="elevation-0 mt-5 ml-auto mr-auto">
+  <v-container max-width="800" class="elevation-0 mt-5 ml-auto mr-auto">
     <v-card-title class="text-wrap" align="center">
       Управление скрэйпингом hh.ru
     </v-card-title>
-  </v-card>
+  </v-container>
 
-  <v-card class="elevation-5 mt-5 ml-auto mr-auto" max-width="800">
+  <v-container class="elevation-5 mt-5 ml-auto mr-auto pa-0" max-width="800">
     <v-toolbar flat>
+      <v-btn icon="mdi-arrow-left" color="primary" @click="$router.go(-1)" />
+      <v-toolbar-title v-if="!$vuetify.display.mobile" class="text-h6 font-weight-bold">
+        Назад
+      </v-toolbar-title>
       <v-spacer />
       <v-btn icon="mdi-plus" color="primary" @click="openCreateDialog" />
     </v-toolbar>
@@ -33,7 +37,7 @@
             </v-col>
             <v-col cols="12" sm="6">
               <v-btn color="primary" @click="openCredentialDialog">
-                Выбрать способ аутентификации
+                Аутентификация
               </v-btn>
             </v-col>
           </v-row>
@@ -122,7 +126,7 @@
         </template>
       </v-data-table-server>
     </v-container>
-  </v-card>
+  </v-container>
 </template>
 
 <script>

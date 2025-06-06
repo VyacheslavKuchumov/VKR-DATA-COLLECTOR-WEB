@@ -1,13 +1,16 @@
 <template>
-  <v-card max-width="800" class="elevation-0 mt-5 ml-auto mr-auto">
+  <v-container max-width="800" class="elevation-0 mt-5 ml-auto mr-auto">
     <v-card-title class="text-wrap" align="center">
       Логи задачи {{ job()?.job_id || "Загрузка..." }}
     </v-card-title>
-  </v-card>
+  </v-container>
 
-  <v-card class="elevation-5 mt-5 ml-auto mr-auto" max-width="800">
+  <v-container class="elevation-5 mt-5 ml-auto mr-auto pa-0" max-width="800">
     <v-toolbar flat>
         <v-btn icon="mdi-arrow-left" color="primary" @click="$router.go(-1)" />
+        <v-toolbar-title v-if="!$vuetify.display.mobile" class="text-h6 font-weight-bold">
+          Назад
+        </v-toolbar-title>
         <v-spacer />
       
     </v-toolbar>
@@ -25,7 +28,7 @@
             <v-card-subtitle>{{ log.timestamp }}</v-card-subtitle>
         </v-card>
     </v-container>
-  </v-card>
+  </v-container>
 
  
 </template>

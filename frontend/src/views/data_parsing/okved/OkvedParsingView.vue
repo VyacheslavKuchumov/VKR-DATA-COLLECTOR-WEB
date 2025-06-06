@@ -1,7 +1,7 @@
-<template> 
+<template>
   <v-container v-if="!$vuetify.display.mobile" max-width="1200" class="elevation-0 mt-5 ml-auto mr-auto">
     <v-card-title class="text-wrap" align="center">
-      Парсинг реестра профессиональных стандартов
+      Парсинг классификатора ОКВЭД
     </v-card-title>
   </v-container>
 
@@ -111,7 +111,7 @@
             <v-row>
               <v-col cols="12">
                 <v-text-field
-                  v-model="editedItem.name"
+                  v-model="editedSource.name"
                   label="Название источника"
                   required
                   clearable
@@ -119,11 +119,10 @@
               </v-col>
               <v-col cols="12">
                 <v-text-field
-                  v-model="editedItem.link"
+                  v-model="editedSource.link"
                   label="Ссылка на источник"
                   required
                   clearable
-                  hint="Пример: https://profstandart.rosmintrud.ru/.../document.xlsx"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -132,8 +131,8 @@
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue-darken-1" text @click="close">Отмена</v-btn>
-          <v-btn color="blue-darken-1" text @click="save">Сохранить</v-btn>
+          <v-btn color="blue-darken-1" text @click="closeDialog">Отмена</v-btn>
+          <v-btn color="blue-darken-1" text @click="saveSource">Сохранить</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -143,11 +142,11 @@
       <v-card>
         <v-card-title class="text-h5">Подтвердите удаление</v-card-title>
         <v-card-text>
-          Вы уверены, что хотите удалить источник: <strong>{{ editedItem.name }}</strong>?
+          Вы уверены, что хотите удалить источник: <strong>{{ editedSource.name }}</strong>?
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue-darken-1" text @click="deleteDialog = false">Отмена</v-btn>
+          <v-btn color="blue-darken-1" text @click="cancelDelete">Отмена</v-btn>
           <v-btn color="red" text @click="confirmDelete">Удалить</v-btn>
         </v-card-actions>
       </v-card>
@@ -157,7 +156,7 @@
 
 <script>
 export default {
-  name: "ProfStandardsView",
+  name: "OkvedParsingView",
   data: () => ({
     dialog: false,
     deleteDialog: false,
@@ -172,13 +171,13 @@ export default {
     sources: [
       { 
         id: 1, 
-        name: 'Реестр профессиональных стандартов', 
-        link: 'https://profstandart.rosmintrud.ru/upload/iblock/d4a/%D0%A0%D0%B5%D0%B5%D1%81%D1%82%D1%80%20%D0%BF%D1%80%D0%BE%D1%84%D0%B5%D1%81%D1%81%D0%B8%D0%BE%D0%BD%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D1%85%20%D1%81%D1%82%D0%B0%D0%BD%D0%B4%D0%B0%D1%80%D1%82%D0%BE%D0%B2%2002.06.2025.xlsx'
+        name: 'Общероссийский классификатор видов экономической деятельности (2025)', 
+        link: 'https://www.regfile.ru/okved2.html'
       }
     ],
-    editedIndex: -1,
-    editedItem: { id: 0, name: '', link: '' },
-    defaultItem: { id: 0, name: '', link: '' }
+    editedSource: { id: 0, name: '', link: '' },
+    defaultSource: { id: 0, name: '', link: '' },
+    editedIndex: -1
   }),
   computed: {
     formTitle() {
@@ -190,13 +189,13 @@ export default {
       return link.length > 50 ? link.substring(0, 47) + '...' : link;
     },
     openCreateDialog() {
-      this.editedItem = Object.assign({}, this.defaultItem);
+      this.editedSource = Object.assign({}, this.defaultSource);
       this.editedIndex = -1;
       this.dialog = true;
     },
     editSource(item) {
-      this.editedIndex = this.sources.findIndex(d => d.id === item.id);
-      this.editedItem = Object.assign({}, item);
+      this.editedIndex = this.sources.findIndex(s => s.id === item.id);
+      this.editedSource = Object.assign({}, item);
       this.dialog = true;
     },
     parseSource(item) {
@@ -205,7 +204,7 @@ export default {
       this.parseTimer = setTimeout(() => {
         this.loading = false;
         this.successDialog = true;
-      }, 2000);
+      }, 4000);
     },
     cancelParse() {
       clearTimeout(this.parseTimer);
@@ -215,39 +214,39 @@ export default {
       this.successDialog = false;
     },
     deleteSource(item) {
-      this.editedIndex = this.sources.findIndex(d => d.id === item.id);
-      this.editedItem = Object.assign({}, item);
+      this.editedIndex = this.sources.findIndex(s => s.id === item.id);
+      this.editedSource = Object.assign({}, item);
       this.deleteDialog = true;
     },
     confirmDelete() {
       if (this.editedIndex !== -1) this.sources.splice(this.editedIndex, 1);
-      this.closeDelete();
+      this.cancelDelete();
     },
-    close() {
-      this.dialog = false;
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      });
-    },
-    closeDelete() {
+    cancelDelete() {
       this.deleteDialog = false;
       this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
+        this.editedSource = Object.assign({}, this.defaultSource);
         this.editedIndex = -1;
       });
     },
-    save() {
+    closeDialog() {
+      this.dialog = false;
+      this.$nextTick(() => {
+        this.editedSource = Object.assign({}, this.defaultSource);
+        this.editedIndex = -1;
+      });
+    },
+    saveSource() {
       if (this.editedIndex > -1) {
-        Object.assign(this.sources[this.editedIndex], this.editedItem);
+        Object.assign(this.sources[this.editedIndex], this.editedSource);
       } else {
         const newId = this.sources.length > 0 
-          ? Math.max(...this.sources.map(d => d.id)) + 1 
+          ? Math.max(...this.sources.map(s => s.id)) + 1 
           : 1;
-        this.editedItem.id = newId;
-        this.sources.push(this.editedItem);
+        this.editedSource.id = newId;
+        this.sources.push(this.editedSource);
       }
-      this.close();
+      this.closeDialog();
     }
   }
 };

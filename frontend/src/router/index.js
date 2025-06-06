@@ -10,6 +10,11 @@ import ForecastView from "@/views/forecast/ForecastView.vue";
 
 import ProfStandardParsingView from "@/views/data_parsing/prof_standard/ProfStandardParsingView.vue";
 import FgosParsingView from "@/views/data_parsing/fgos/FgosParsingView.vue";
+import StatOtchetParsingView from "@/views/data_parsing/stat_otchetnost/StatOtchetParsingView.vue";
+import OkvedParsingView from "@/views/data_parsing/okved/OkvedParsingView.vue";
+
+import JobsView from "@/views/data_parsing/hh_ru/JobsView.vue";
+import JobLogsView from "@/views/data_parsing/hh_ru/JobLogsView.vue";
 
 const routes = [
   // {
@@ -59,6 +64,31 @@ const routes = [
     name: "fgos-parsing",
     component: FgosParsingView,
   },
+  // route for stat otchet parsing
+  {
+    path: "/data-parsing/statistics",
+    name: "stat-otchet-parsing",
+    component: StatOtchetParsingView,
+  },
+  // route for okved parsing
+  {
+    path: "/data-parsing/okved",
+    name: "okved-parsing",
+    component: OkvedParsingView,
+  },
+  // route for hh.ru jobs parsing
+  {
+    path: "/data-parsing/hh_ru/jobs",
+    name: "hh-ru-jobs-parsing",
+    component: JobsView,
+  },
+  // route for hh.ru job logs
+  {
+    path: "/job/:jobId",
+    name: "hh-ru-job-logs",
+    component: JobLogsView,
+    props: true,
+  }
  
  
   

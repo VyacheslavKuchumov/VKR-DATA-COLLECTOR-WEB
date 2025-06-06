@@ -65,7 +65,7 @@
         data() {
             return {
                 sources: [
-                    { title: "Кадровые агентства", id: "agencies", icon: "mdi-account-tie" },
+                    { title: "Кадровые агентства", id: "hh_ru/jobs", icon: "mdi-account-tie" },
                     { title: "Стратегический план развития региона", id: "region-plan", icon: "mdi-map-legend" },
                     { title: "Национальная программа развития РФ", id: "national-program", icon: "mdi-star-circle" },
                     { title: "ФГОС", id: "fgos", icon: "mdi-book-education" },
