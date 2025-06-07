@@ -1,5 +1,5 @@
 <template>
-    <v-container v-if="!$vuetify.display.mobile" max-width="800" class="elevation-0 mt-5 ml-auto mr-auto">
+      <v-container v-if="!$vuetify.display.mobile" max-width="800" class="elevation-0 mt-5 ml-auto mr-auto">
         <v-card-title class="text-wrap" align="center">
             Управление пользователями
         </v-card-title>
@@ -18,188 +18,186 @@
             </v-btn>
         </v-toolbar>
 
-        <v-container class="pa-0">
-            <v-data-table
-                :headers="headers"
-                :items="users"
-                :items-per-page="10"
-                class="elevation-1"
-            >
-                <template v-slot:item.actions="{ item }">
-                    <v-icon
-                        size="small"
-                        class="me-2"
-                        @click="editUser(item)"
-                    >
-                        mdi-pencil
-                    </v-icon>
-                    <v-icon
-                        size="small"
-                        @click="deleteUser(item)"
-                    >
-                        mdi-delete
-                    </v-icon>
-                </template>
-            </v-data-table>
-        </v-container>
 
-        <!-- Диалог создания/редактирования -->
-        <v-dialog v-model="dialog" max-width="500">
-            <v-card>
-                <v-card-title>
-                    <span class="text-h5">{{ formTitle }}</span>
-                </v-card-title>
+      <v-data-table-server
+        :headers="headers"
+        :items="users()"
+        :loading="isLoading()"
+        :items-per-page="-1"
+        hide-default-footer
+      >
+        <template v-slot:item.actions="{ item }">
+         
+          <v-tooltip text="Редактировать" location="top">
+            <template v-slot:activator="{ props }">
+              <v-icon
+                v-bind="props"
+                size="small"
+                class="me-2"
+                @click="openEditDialog(item)"
+              >
+                mdi-pencil
+              </v-icon>
+            </template>
+          </v-tooltip>
 
-                <v-card-text>
-                    <v-container>
-                        <v-row>
-                            <v-col cols="12">
-                                <v-text-field
-                                    v-model="editedItem.fullName"
-                                    label="ФИО"
-                                    required
-                                ></v-text-field>
-                            </v-col>
-                            <v-col cols="12">
-                                <v-select
-                                    v-model="editedItem.role"
-                                    :items="roles"
-                                    label="Роль"
-                                    required
-                                ></v-select>
-                            </v-col>
-                        </v-row>
-                    </v-container>
-                </v-card-text>
-
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="blue-darken-1" variant="text" @click="close">
-                        Отмена
-                    </v-btn>
-                    <v-btn color="blue-darken-1" variant="text" @click="save">
-                        Сохранить
-                    </v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
-
-        <!-- Диалог подтверждения удаления -->
-        <v-dialog v-model="deleteDialog" max-width="500">
-            <v-card>
-                <v-card-title class="text-h5">Вы уверены?</v-card-title>
-                <v-card-text>
-                    Вы собираетесь удалить пользователя: <strong>{{ editedItem.fullName }}</strong>
-                </v-card-text>
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="blue-darken-1" variant="text" @click="deleteDialog = false">
-                        Отмена
-                    </v-btn>
-                    <v-btn color="red" variant="text" @click="confirmDelete">
-                        Удалить
-                    </v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
+          <v-tooltip text="Пометить на удаление" location="top">
+            <template v-slot:activator="{ props }">
+              <v-icon
+                v-bind="props"
+                size="small"
+                @click="confirmDelete(item)"
+              >
+                mdi-delete
+              </v-icon>
+            </template>
+          </v-tooltip>
+        </template>
+      </v-data-table-server>
     </v-container>
+
+
+  <!-- Create / Edit Dialog -->
+  <v-dialog v-model="editDialog" max-width="450px">
+    <v-card>
+      <v-card-title class="text-h5">
+        {{ editingUser ? "Редактировать пользователя" : "Создать пользователя" }}
+      </v-card-title>
+      <v-card-text>
+        <v-form ref="userFormRef" v-model="valid" @submit.prevent="saveUser">
+          <v-text-field
+            v-model="userForm.name"
+            label="ФИО"
+            :rules="[rules.required]"
+            clearable
+          />
+          <v-text-field
+            v-model="userForm.email"
+            label="Email"
+            :rules="[rules.required, rules.email]"
+            clearable
+          />
+          <v-select
+            v-model="userForm.role"
+            :items="roles"
+            label="Роль"
+            :rules="[rules.required]"
+            clearable
+          />
+        </v-form>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer />
+        <v-btn text @click="closeEditDialog">Отмена</v-btn>
+        <v-btn color="primary" :disabled="!valid" @click="saveUser">Сохранить</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
+  <!-- Delete Confirmation Dialog -->
+  <v-dialog v-model="confirmDeleteDialog" max-width="400px">
+    <v-card>
+      <v-card-title class="text-h5">Подтвердите удаление</v-card-title>
+      <v-card-text>
+        Вы уверены, что хотите удалить пользователя
+        «{{ userToDelete?.name }}»?
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer />
+        <v-btn text @click="closeConfirmDialog">Отмена</v-btn>
+        <v-btn color="red" @click="deleteConfirmed">Удалить</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>
-    export default {
-        name: "UserManagementView",
-        data: () => ({
-            dialog: false,
-            deleteDialog: false,
-            headers: [
-                { title: 'ID', key: 'id', width: '80px' },
-                { title: 'ФИО', key: 'fullName' },
-                { title: 'Роль', key: 'role' },
-                { title: 'Действия', key: 'actions', sortable: false, width: '100px' }
-            ],
-            users: [
-                { id: 1, fullName: 'Иванов Иван Иванович', role: 'Администратор' },
-                { id: 2, fullName: 'Петрова Светлана Викторовна', role: 'Редактор' },
-                { id: 3, fullName: 'Сидоров Алексей Петрович', role: 'Аналитик' },
-                { id: 4, fullName: 'Кузнецова Ольга Сергеевна', role: 'Пользователь' },
-            ],
-            roles: ['Администратор', 'Редактор', 'Аналитик', 'Пользователь'],
-            editedIndex: -1,
-            editedItem: {
-                id: 0,
-                fullName: '',
-                role: ''
-            },
-            defaultItem: {
-                id: 0,
-                fullName: '',
-                role: ''
-            }
-        }),
-        computed: {
-            formTitle() {
-                return this.editedIndex === -1 ? 'Новый пользователь' : 'Редактирование пользователя';
-            }
-        },
-        methods: {
-            openCreateDialog() {
-                this.editedItem = Object.assign({}, this.defaultItem);
-                this.editedIndex = -1;
-                this.dialog = true;
-            },
-            
-            editUser(item) {
-                this.editedIndex = this.users.indexOf(item);
-                this.editedItem = Object.assign({}, item);
-                this.dialog = true;
-            },
-            
-            deleteUser(item) {
-                this.editedIndex = this.users.indexOf(item);
-                this.editedItem = Object.assign({}, item);
-                this.deleteDialog = true;
-            },
-            
-            confirmDelete() {
-                this.users.splice(this.editedIndex, 1);
-                this.closeDelete();
-            },
-            
-            close() {
-                this.dialog = false;
-                this.$nextTick(() => {
-                    this.editedItem = Object.assign({}, this.defaultItem);
-                    this.editedIndex = -1;
-                });
-            },
-            
-            closeDelete() {
-                this.deleteDialog = false;
-                this.$nextTick(() => {
-                    this.editedItem = Object.assign({}, this.defaultItem);
-                    this.editedIndex = -1;
-                });
-            },
-            
-            save() {
-                if (this.editedIndex > -1) {
-                    // Обновление существующего пользователя
-                    Object.assign(this.users[this.editedIndex], this.editedItem);
-                } else {
-                    // Создание нового пользователя
-                    const newId = Math.max(...this.users.map(u => u.id)) + 1;
-                    this.editedItem.id = newId;
-                    this.users.push(this.editedItem);
-                }
-                this.close();
-            }
-        }
-    };
-</script>
+import { mapActions } from "vuex";
 
-<style scoped>
-/* .v-data-table {
-    border-radius: 8px;
-    overflow: hidden;
-} */
-</style>
+export default {
+  name: "UsersView",
+  data() {
+    return {
+      headers: [
+        { title: "ФИО", key: "name" },
+        { title: "Email", key: "email" },
+        { title: "Роль", key: "role" },
+        { title: 'Действия', key: 'actions', sortable: false, width: '20%' }
+      ],
+      editDialog: false,
+      confirmDeleteDialog: false,
+      roles: ['Администратор', 'Аналитик', 'Пользователь'],
+      editingUser: null,
+      userToDelete: null,
+      userForm: { name: "", email: "", role: "" },
+      valid: false,
+      rules: {
+        required: v => !!v || "Это поле обязательно",
+        email: v => /.+@.+\..+/.test(v) || "Неверный формат email",
+      },
+    };
+  },
+  computed: {
+    
+  },
+  methods: {
+    users() {
+      return this.$store.state.users.data || [];
+    },
+    isLoading() {
+      return this.$store.state.users.loading;
+    },
+    errorMessage() {
+      return this.$store.state.users.error;
+    },
+    ...mapActions("users", [
+      "getUsers",
+      "createUser",
+      "updateUser",
+      "deleteUser",
+    ]),
+
+    openCreateDialog() {
+      this.editingUser = null;
+      this.userForm = { name: "", email: "", role: "" };
+      this.editDialog = true;
+    },
+    openEditDialog(user) {
+      this.editingUser = user;
+      this.userForm = { ...user };
+      this.editDialog = true;
+    },
+    closeEditDialog() {
+      this.editDialog = false;
+      this.userForm = { name: "", email: "", role: "" };
+    },
+    async saveUser() {
+      const payload = { ...this.userForm };
+      if (this.editingUser) {
+        await this.updateUser({ id: this.editingUser.id, payload });
+      } else {
+        await this.createUser(payload);
+      }
+      await this.getUsers();
+      this.closeEditDialog();
+    },
+    confirmDelete(user) {
+      this.userToDelete = user;
+      this.confirmDeleteDialog = true;
+    },
+    closeConfirmDialog() {
+      this.confirmDeleteDialog = false;
+      this.userToDelete = null;
+    },
+    async deleteConfirmed() {
+      if (!this.userToDelete) return;
+      await this.deleteUser(this.userToDelete.id);
+      await this.getUsers();
+      this.closeConfirmDialog();
+    },
+  },
+  async created() {
+    await this.getUsers();
+  },
+};
+</script>

@@ -8,7 +8,8 @@ from app.routers.region_router import router as region_router
 from app.routers.hh_ru_credentials_router import router as hh_ru_credentials_router
 from app.routers.job_router import router as job_router
 
-
+from app.routers.user_router import router as user_router
+from app.routers.data_source_router import router as data_source_router
 
 app = FastAPI(root_path="/api",
     title="Data collector API",
@@ -32,10 +33,14 @@ app.add_middleware(
 
 
 # Include routers
-app.include_router(student_router, prefix="/students", tags=["students"])
+app.include_router(user_router, prefix="/users", tags=["users"])
+app.include_router(data_source_router, prefix="/data-sources", tags=["data_sources"])
+
 app.include_router(region_router, prefix="/regions", tags=["regions"])
 app.include_router(hh_ru_credentials_router, prefix="/hh-ru-credentials", tags=["hh_ru_credentials"])
 app.include_router(job_router, prefix="/jobs", tags=["jobs"])
+app.include_router(student_router, prefix="/students", tags=["students"])
+
 
 
 # websockets
