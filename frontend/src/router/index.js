@@ -8,11 +8,19 @@ import DataParsingView from "@/views/data_parsing/DataParsingView.vue";
 import UsersView from "@/views/users/UsersView.vue";
 import ForecastView from "@/views/forecast/ForecastView.vue";
 
+// parsers
 import ProfStandardParsingView from "@/views/data_parsing/prof_standard/ProfStandardParsingView.vue";
 import FgosParsingView from "@/views/data_parsing/fgos/FgosParsingView.vue";
 import StatOtchetParsingView from "@/views/data_parsing/stat_otchetnost/StatOtchetParsingView.vue";
 import OkvedParsingView from "@/views/data_parsing/okved/OkvedParsingView.vue";
+import ProfClassificatorParsingView from "@/views/data_parsing/classificator_prof/ProfClassificatorParsingView.vue";
+import KcpParsingView from "@/views/data_parsing/kcp/KcpParsingView.vue";
+import RegionalPlanParsingView from "@/views/data_parsing/region_plan/RegionalPlanParsingView.vue";
+import NationalPlanParsingView from "@/views/data_parsing/national_plan/NationalPlanParsingView.vue";
 
+//datasets
+
+// hh.ru data retrival
 import JobsView from "@/views/data_parsing/hh_ru/JobsView.vue";
 import JobLogsView from "@/views/data_parsing/hh_ru/JobLogsView.vue";
 
@@ -82,6 +90,32 @@ const routes = [
     name: "hh-ru-jobs-parsing",
     component: JobsView,
   },
+  // route for prof classificator parsing
+  {
+    path: "/data-parsing/prof-classificator",
+    name: "prof-classificator-parsing",
+    component: ProfClassificatorParsingView,
+  },
+  // route for kcp parsing
+  {
+    path: "/data-parsing/kcp",
+    name: "kcp-parsing",
+    component: KcpParsingView,
+  },
+  // route for regional plan parsing
+  {
+    path: "/data-parsing/regional-plan",
+    name: "regional-plan-parsing",
+    component: RegionalPlanParsingView
+  },
+  // route for national plan parsing
+  {
+    path: "/data-parsing/national-plan",
+    name: "national-plan-parsing",
+    component: NationalPlanParsingView
+  },
+
+
   // route for hh.ru job logs
   {
     path: "/job/:jobId",
