@@ -5,6 +5,7 @@ import hh_ru_credentials from "@/store/hh_ru_credentials";
 import jobs from "@/store/jobs";
 import users from "@/store/users";
 import data_sources from "@/store/data_sources";
+import minstat_workers from "@/store/minstat_workers";
 
 
 
@@ -21,5 +22,6 @@ export default createStore({
     jobs: jobs,
     users: users,
     data_sources: data_sources,
+    minstat_workers: minstat_workers,
   },
 });

@@ -69,7 +69,7 @@
                     { title: "Национальная программа развития РФ", id: "national-program", icon: "mdi-star-circle" },
                     { title: "Перечень ФГОС", id: "fgos", icon: "mdi-book-education" },
                     { title: "Профстандарты", id: "profstandards", icon: "mdi-certificate" },
-                    { title: "Статотчетность", id: "statistics", icon: "mdi-chart-bar" },
+                    { title: "Статотчетность", id: "stat-otchet", icon: "mdi-chart-bar" },
                     { title: "Контрольные цифры приема ВО, СПО", id: "admission", icon: "mdi-school" },
                     { title: "Классификатор профессий", id: "professions", icon: "mdi-account-group" },
                     { title: "ОКВЭД", id: "okved", icon: "mdi-factory" }
@@ -80,7 +80,7 @@
             selectDataset(dataset) {
                 console.log("Переход к датасету:", dataset.title);
                 // Реальная логика перехода:
-                // this.$router.push(`/datasets/${dataset.id}`);
+                this.$router.push(`/datasets/${dataset.id}`);
             }
         }
     };
