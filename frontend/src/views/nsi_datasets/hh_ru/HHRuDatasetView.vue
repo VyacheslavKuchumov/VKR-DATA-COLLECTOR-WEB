@@ -2,17 +2,16 @@
   <v-container v-if="!$vuetify.display.mobile" max-width="800" class="elevation-0 mt-5 ml-auto mr-auto">
     <v-card-title class="text-wrap" align="center">
       Статистика вакансий по профессиональным ролям
-      
     </v-card-title>
   </v-container>
 
   <v-container class="elevation-0 mt-5 ml-auto mr-auto" max-width="1200">
     <v-toolbar flat color="white">
-        <v-btn icon="mdi-arrow-left" color="primary" @click="$router.push('/datasets')" />
-        <v-toolbar-title v-if="!$vuetify.display.mobile" class="text-subtitle-1 font-weight-bold">
-            Назад
-        </v-toolbar-title>
-        <v-spacer />
+      <v-btn icon="mdi-arrow-left" color="primary" @click="$router.push('/datasets')" />
+      <v-toolbar-title v-if="!$vuetify.display.mobile" class="text-subtitle-1 font-weight-bold">
+        Назад
+      </v-toolbar-title>
+      <v-spacer />
     </v-toolbar>
 
     <v-card-text>
@@ -28,7 +27,6 @@
 
         <!-- Карточки с графиками вакансий -->
         <v-col
-            
           v-for="(group, index) in groupedData"
           :key="index"
           cols="12"
@@ -48,7 +46,7 @@
 
             <v-sparkline
               :model-value="group.vacanciesNums"
-              :labels="group.dates"
+              :labels="group.datesFormatted"
               :smooth="16"
               :auto-draw="true"
               class="mt-4 flex-grow-1"
@@ -86,7 +84,7 @@
               large
               @save="saveRow(item)"
             >
-              {{ item.entry_date }}
+              {{ formatDate(item.entry_date) }}
               <template #input>
                 <v-text-field v-model="item.entry_date" type="date" />
               </template>
@@ -106,12 +104,6 @@
               </template>
             </v-edit-dialog>
           </template>
-
-          <!-- <template #item.actions="{ item }">
-            <v-icon small class="mr-2" @click="deleteRow(item.id)">
-              mdi-delete
-            </v-icon>
-          </template> -->
         </v-data-table>
       </v-card-text>
       <v-card-actions>
@@ -133,8 +125,7 @@ export default {
       selectedRole: null,
       tableHeaders: [
         { text: 'Дата записи', value: 'entry_date', align: 'start' },
-        { text: 'Число вакансий', value: 'vacancies_num' },
-        { text: 'Действия', value: 'actions', sortable: false },
+        { text: 'Число вакансий', value: 'vacancies_num' }
       ],
     };
   },
@@ -142,7 +133,6 @@ export default {
     datasets() {
       return this.$store.state.hh_ru_dataset.data || [];
     },
-    // Группировка данных по роли
     groupedData() {
       const groups = {};
       this.datasets.forEach(item => {
@@ -157,12 +147,11 @@ export default {
         return {
           role: key,
           dates: entries.map(e => e.entry_date),
+          datesFormatted: entries.map(e => this.formatDate(e.entry_date)),
           vacanciesNums: entries.map(e => e.vacancies_num),
         };
       });
     },
-    
-    // Строки для выбранной роли
     filteredRows() {
       if (!this.selectedRole) return [];
       return this.datasets
@@ -171,23 +160,19 @@ export default {
     },
   },
   methods: {
-    // Все данные из стора
-    
-    loading() {
-      return this.$store.state.hh_ru_dataset.loading;
-    },
     ...mapActions({
       getHhRuDatasets: 'hh_ru_dataset/getHhRuDatasets',
       updateHhRuDataset: 'hh_ru_dataset/updateHhRuDataset',
       deleteHhRuDataset: 'hh_ru_dataset/deleteHhRuDataset',
     }),
-
+    formatDate(dateStr) {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('ru-RU');
+    },
     openDialog(role) {
       this.selectedRole = role;
       this.dialog = true;
     },
-
-    // Сохранение изменений записи
     async saveRow(item) {
       const { id, entry_date, professional_role, vacancies_num } = item;
       await this.updateHhRuDataset({
@@ -195,8 +180,6 @@ export default {
         payload: { entry_date, professional_role, vacancies_num }
       });
     },
-
-    // Удаление записи
     async deleteRow(id) {
       await this.deleteHhRuDataset(id);
     },

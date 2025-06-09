@@ -70,7 +70,7 @@
                     // { title: "Национальная программа развития РФ", id: "national-program", icon: "mdi-star-circle" },
                     { title: "Перечень ФГОС", id: "fgos", icon: "mdi-book-education" },
                     { title: "Профстандарты", id: "prof-standard", icon: "mdi-certificate" },
-                    { title: "Статотчетность", id: "stat-otchet", icon: "mdi-chart-bar" },
+                    { title: "Официальная статистика по количеству работников", id: "stat-otchet", icon: "mdi-chart-bar" },
                     { title: "Контрольные цифры приема ВО, СПО", id: "kcp", icon: "mdi-school" },
                     { title: "Классификатор профессий", id: "classificator-prof", icon: "mdi-account-group" },
                     { title: "ОКВЭД", id: "okved", icon: "mdi-factory" }
