@@ -12,6 +12,8 @@ from app.routers.user_router import router as user_router
 from app.routers.data_source_router import router as data_source_router
 from app.routers.minstat_worker_router import router as minstat_worker_router
 from app.routers.hh_ru_dataset_router import router as hh_ru_dataset_router
+from app.routers.fgos_dataset_router import router as fgos_dataset_router
+from app.routers.kcp_dataset_router import router as kcp_dataset_router
 
 app = FastAPI(root_path="/api",
     title="Data collector API",
@@ -35,10 +37,13 @@ app.add_middleware(
 
 
 # Include routers
+app.include_router(kcp_dataset_router, prefix="/kcp-datasets", tags=["kcp_datasets"])
 app.include_router(minstat_worker_router, prefix="/minstat-workers", tags=["minstat_workers"])
+app.include_router(fgos_dataset_router, prefix="/fgos-dataset", tags=["fgos_datasets"])
 app.include_router(hh_ru_dataset_router, prefix="/hh-ru-dataset", tags=["hh_ru_datasets"])
 app.include_router(user_router, prefix="/users", tags=["users"])
 app.include_router(data_source_router, prefix="/data-sources", tags=["data_sources"])
+
 
 app.include_router(region_router, prefix="/regions", tags=["regions"])
 app.include_router(hh_ru_credentials_router, prefix="/hh-ru-credentials", tags=["hh_ru_credentials"])

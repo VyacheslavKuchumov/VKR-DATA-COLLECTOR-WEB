@@ -126,7 +126,7 @@ export default {
       ],
       editDialog: false,
       confirmDeleteDialog: false,
-      roles: ['Администратор', 'Аналитик', 'Пользователь'],
+      roles: ['Администратор', 'Пользователь'],
       editingUser: null,
       userToDelete: null,
       userForm: { name: "", email: "", role: "" },

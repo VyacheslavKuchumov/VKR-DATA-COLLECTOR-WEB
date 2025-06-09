@@ -71,6 +71,7 @@
         <v-data-table
           :headers="tableHeaders"
           :items="filteredRows"
+          :items-per-page="-1"
           item-key="id"
           class="elevation-1"
           hide-default-footer

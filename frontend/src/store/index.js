@@ -7,6 +7,8 @@ import users from "@/store/users";
 import data_sources from "@/store/data_sources";
 import minstat_workers from "@/store/minstat_workers";
 import hh_ru_dataset from "@/store/hh_ru_dataset";
+import fgos_dataset from "@/store/fgos_dataset";
+import kcp_dataset from "@/store/kcp_dataset";
 
 
 
@@ -25,5 +27,7 @@ export default createStore({
     data_sources: data_sources,
     minstat_workers: minstat_workers,
     hh_ru_dataset: hh_ru_dataset,
+    fgos_dataset: fgos_dataset,
+    kcp_dataset: kcp_dataset,
   },
 });

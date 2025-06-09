@@ -21,6 +21,8 @@ import NationalPlanParsingView from "@/views/data_parsing/national_plan/National
 //datasets
 import StatOtchetDatasetView from "@/views/nsi_datasets/stat_otchetnost/StatOtchetDatasetView.vue";
 import HHRuDatasetView from "@/views/nsi_datasets/hh_ru/HHRuDatasetView.vue";
+import FgosDatasetView from "@/views/nsi_datasets/fgos/FgosDatasetView.vue";
+import KcpDatasetView from "@/views/nsi_datasets/kcp/KcpDatasetView.vue";
 
 // hh.ru data retrival
 import JobsView from "@/views/data_parsing/hh_ru/JobsView.vue";
@@ -128,6 +130,18 @@ const routes = [
     path: "/datasets/hh-ru",
     name: "hh-ru-dataset",
     component: HHRuDatasetView,
+  },
+  // route for fgos dataset
+  {
+    path: "/datasets/fgos",
+    name: "fgos-dataset",
+    component: FgosDatasetView,
+  },
+  // route for kcp dataset
+  {
+    path: "/datasets/kcp",
+    name: "kcp-dataset",
+    component: KcpDatasetView,
   },
 
   // route for hh.ru job logs
