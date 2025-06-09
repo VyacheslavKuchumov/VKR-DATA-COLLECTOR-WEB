@@ -1,15 +1,15 @@
 <template>
   <v-container max-width="800" class="elevation-0 mt-5 ml-auto mr-auto">
     <v-card-title class="text-wrap" align="center">
-      Статистика КЦП по направлениям подготовки
+      Статистика КЦП СПО по направлениям подготовки
     </v-card-title>
   </v-container>
 
   <v-container class="elevation-0 mt-5 ml-auto mr-auto" max-width="1200">
     <v-toolbar flat color="white">
-      <v-btn icon="mdi-arrow-left" color="primary" @click="$router.push('/')" />
+      <v-btn icon="mdi-arrow-left" color="primary" @click="$router.push('/datasets')" />
       <v-toolbar-title v-if="!$vuetify.display.mobile" class="text-subtitle-1 font-weight-bold">
-        На главную
+        Назад
       </v-toolbar-title>
       <v-spacer />
     </v-toolbar>

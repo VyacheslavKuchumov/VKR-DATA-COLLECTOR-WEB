@@ -9,7 +9,9 @@ import minstat_workers from "@/store/minstat_workers";
 import hh_ru_dataset from "@/store/hh_ru_dataset";
 import fgos_dataset from "@/store/fgos_dataset";
 import kcp_dataset from "@/store/kcp_dataset";
-
+import prof_standard_dataset from "@/store/prof_standard_dataset";
+import classificator_prof_dataset from "@/store/classificator_prof_dataset";
+import okved_dataset from "@/store/okved_dataset";
 
 
 
@@ -29,5 +31,8 @@ export default createStore({
     hh_ru_dataset: hh_ru_dataset,
     fgos_dataset: fgos_dataset,
     kcp_dataset: kcp_dataset,
+    prof_standard_dataset: prof_standard_dataset,
+    classificator_prof_dataset: classificator_prof_dataset,
+    okved_dataset: okved_dataset,
   },
 });

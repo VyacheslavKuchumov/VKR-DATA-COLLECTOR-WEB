@@ -23,6 +23,9 @@ import StatOtchetDatasetView from "@/views/nsi_datasets/stat_otchetnost/StatOtch
 import HHRuDatasetView from "@/views/nsi_datasets/hh_ru/HHRuDatasetView.vue";
 import FgosDatasetView from "@/views/nsi_datasets/fgos/FgosDatasetView.vue";
 import KcpDatasetView from "@/views/nsi_datasets/kcp/KcpDatasetView.vue";
+import ProfStandardView from "@/views/nsi_datasets/prof_standard/ProfStandardView.vue";
+import ClassificatorProfDatasetView from "@/views/nsi_datasets/classificator_prof/ClassificatorProfDatasetView.vue";
+import OkvedDatasetView from "@/views/nsi_datasets/okved/OkvedDatasetView.vue";
 
 // hh.ru data retrival
 import JobsView from "@/views/data_parsing/hh_ru/JobsView.vue";
@@ -142,6 +145,24 @@ const routes = [
     path: "/datasets/kcp",
     name: "kcp-dataset",
     component: KcpDatasetView,
+  },
+  // route for prof standard dataset
+  {
+    path: "/datasets/prof-standard",
+    name: "prof-standard-dataset",
+    component: ProfStandardView,
+  },
+  // route for classificator prof dataset
+  {
+    path: "/datasets/classificator-prof",
+    name: "classificator-prof-dataset",
+    component: ClassificatorProfDatasetView,
+  },
+  // route for okved dataset
+  {
+    path: "/datasets/okved",
+    name: "okved-dataset",
+    component: OkvedDatasetView,
   },
 
   // route for hh.ru job logs

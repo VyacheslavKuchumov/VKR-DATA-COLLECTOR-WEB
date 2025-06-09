@@ -1,7 +1,7 @@
 <template>
   <v-container v-if="!$vuetify.display.mobile" max-width="800" class="elevation-0 mt-5 ml-auto mr-auto">
     <v-card-title class="text-wrap" align="center">
-      Управление записями ФГОС
+      Управление профессиональными стандартами
     </v-card-title>
   </v-container>
 
@@ -13,10 +13,11 @@
       </v-toolbar-title>
       <v-spacer />
       <v-btn v-if="!$vuetify.display.mobile" color="primary" prepend-icon="mdi-plus" @click="openCreateDialog">
-        Добавить ФГОС
+        Добавить стандарт
       </v-btn>
       <v-btn v-else color="primary" icon="mdi-plus" @click="openCreateDialog" />
     </v-toolbar>
+
     <v-data-table-server
       :headers="headers"
       :items="datasets()"
@@ -57,27 +58,32 @@
   <v-dialog v-model="editDialog" max-width="600px">
     <v-card>
       <v-card-title class="text-h5">
-        {{ editing ? "Редактировать ФГОС" : "Добавить ФГОС" }}
+        {{ editing ? "Редактировать стандарт" : "Добавить стандарт" }}
       </v-card-title>
       <v-card-text>
         <v-form ref="formRef" v-model="valid" @submit.prevent="save">
           <v-text-field
-            v-model="form.fgos_code"
-            label="Код ФГОС"
+            v-model="form.prof_standard_code"
+            label="Код стандарта"
             :rules="[rules.required]"
             clearable
           />
           <v-text-field
-            v-model="form.fgos_name"
-            label="Название программы"
+            v-model="form.prof_standard_sphere"
+            label="Сфера деятельности"
+            :rules="[rules.required]"
+            clearable
+          />
+          <v-text-field
+            v-model="form.prof_standard_type"
+            label="Тип деятельности"
             :rules="[rules.required]"
             clearable
           />
           <v-textarea
-            v-model="form.fgos_prikaz"
-            label="Приказ"
+            v-model="form.prof_standard_name"
+            label="Наименование стандарта"
             :rules="[rules.required]"
-            rows="3"
             auto-grow
             clearable
           />
@@ -94,9 +100,9 @@
   <!-- Confirm Delete -->
   <v-dialog v-model="confirmDeleteDialog" max-width="400px">
     <v-card>
-      <v-card-title class="text-h5">Удалить ФГОС</v-card-title>
+      <v-card-title class="text-h5">Удалить стандарт</v-card-title>
       <v-card-text>
-        Вы уверены, что хотите удалить запись «{{ datasetToDelete?.fgos_code }} — {{ datasetToDelete?.fgos_name }}»?
+        Вы уверены, что хотите удалить запись «{{ datasetToDelete?.prof_standard_code }} — {{ datasetToDelete?.prof_standard_name }}»?
       </v-card-text>
       <v-card-actions>
         <v-spacer />
@@ -111,19 +117,21 @@
 import { mapActions } from "vuex";
 
 export default {
-  name: "FgosDatasetView",
+  name: "ProfStandardView",
   data() {
     return {
       headers: [
-        { title: "Код", key: "fgos_code" },
-        { title: "Название", key: "fgos_name" },
-        { title: "Приказ", key: "fgos_prikaz" },
+        { title: "Код", key: "prof_standard_code" },
+        { title: "Сфера", key: "prof_standard_sphere" },
+        { title: "Тип", key: "prof_standard_type" },
+        { title: "Наименование", key: "prof_standard_name" },
         { title: "Действия", key: "actions", sortable: false, width: '20%' }
       ],
       form: {
-        fgos_code: "",
-        fgos_name: "",
-        fgos_prikaz: "",
+        prof_standard_code: "",
+        prof_standard_sphere: "",
+        prof_standard_type: "",
+        prof_standard_name: "",
       },
       editingDataset: null,
       datasetToDelete: null,
@@ -137,23 +145,24 @@ export default {
   },
   methods: {
     datasets() {
-      return this.$store.state.fgos_dataset.data || [];
+      return this.$store.state.prof_standard_dataset.data || [];
     },
     isLoading() {
-      return this.$store.state.fgos_dataset.loading;
+      return this.$store.state.prof_standard_dataset.loading;
     },
     ...mapActions({
-        getFgosDatasets: "fgos_dataset/getFgosDatasets",
-        createFgosDataset: "fgos_dataset/createFgosDataset",
-        updateFgosDataset: "fgos_dataset/updateFgosDataset",
-        deleteFgosDataset: "fgos_dataset/deleteFgosDataset",
+      getDatasets: "prof_standard_dataset/getProfStandardDatasets",
+      createDataset: "prof_standard_dataset/createProfStandardDataset",
+      updateDataset: "prof_standard_dataset/updateProfStandardDataset",
+      deleteDataset: "prof_standard_dataset/deleteProfStandardDataset",
     }),
     openCreateDialog() {
       this.editingDataset = null;
       this.form = {
-        fgos_code: "",
-        fgos_name: "",
-        fgos_prikaz: "",
+        prof_standard_code: "",
+        prof_standard_sphere: "",
+        prof_standard_type: "",
+        prof_standard_name: "",
       };
       this.editDialog = true;
     },
@@ -168,11 +177,11 @@ export default {
     async save() {
       const payload = { ...this.form };
       if (this.editingDataset) {
-        await this.updateFgosDataset({ id: this.editingDataset.id, payload });
+        await this.updateDataset({ id: this.editingDataset.id, payload });
       } else {
-        await this.createFgosDataset(payload);
+        await this.createDataset(payload);
       }
-      await this.getFgosDatasets();
+      await this.getDatasets();
       this.closeEditDialog();
     },
     confirmDelete(item) {
@@ -184,13 +193,13 @@ export default {
     },
     async deleteConfirmed() {
       if (!this.datasetToDelete) return;
-      await this.deleteFgosDataset(this.datasetToDelete.id);
-      await this.getFgosDatasets();
+      await this.deleteDataset(this.datasetToDelete.id);
+      await this.getDatasets();
       this.closeConfirmDialog();
     },
   },
   async created() {
-    await this.getFgosDatasets();
+    await this.getDatasets();
   },
 };
 </script>

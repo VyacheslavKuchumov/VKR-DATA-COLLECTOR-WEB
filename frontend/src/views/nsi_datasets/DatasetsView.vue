@@ -66,13 +66,13 @@
             return {
                 datasets: [
                     { title: "Кадровые агентства", id: "hh-ru", icon: "mdi-account-tie" },
-                    { title: "Стратегический план развития региона", id: "region-plan", icon: "mdi-map-legend" },
-                    { title: "Национальная программа развития РФ", id: "national-program", icon: "mdi-star-circle" },
+                    // { title: "Стратегический план развития региона", id: "region-plan", icon: "mdi-map-legend" },
+                    // { title: "Национальная программа развития РФ", id: "national-program", icon: "mdi-star-circle" },
                     { title: "Перечень ФГОС", id: "fgos", icon: "mdi-book-education" },
-                    { title: "Профстандарты", id: "profstandards", icon: "mdi-certificate" },
+                    { title: "Профстандарты", id: "prof-standard", icon: "mdi-certificate" },
                     { title: "Статотчетность", id: "stat-otchet", icon: "mdi-chart-bar" },
                     { title: "Контрольные цифры приема ВО, СПО", id: "kcp", icon: "mdi-school" },
-                    { title: "Классификатор профессий", id: "professions", icon: "mdi-account-group" },
+                    { title: "Классификатор профессий", id: "classificator-prof", icon: "mdi-account-group" },
                     { title: "ОКВЭД", id: "okved", icon: "mdi-factory" }
                 ]
             };

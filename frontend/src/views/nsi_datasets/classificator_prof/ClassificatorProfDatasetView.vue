@@ -1,7 +1,7 @@
 <template>
   <v-container v-if="!$vuetify.display.mobile" max-width="800" class="elevation-0 mt-5 ml-auto mr-auto">
     <v-card-title class="text-wrap" align="center">
-      Управление записями ФГОС
+      Управление профессиями
     </v-card-title>
   </v-container>
 
@@ -13,10 +13,11 @@
       </v-toolbar-title>
       <v-spacer />
       <v-btn v-if="!$vuetify.display.mobile" color="primary" prepend-icon="mdi-plus" @click="openCreateDialog">
-        Добавить ФГОС
+        Добавить профессию
       </v-btn>
       <v-btn v-else color="primary" icon="mdi-plus" @click="openCreateDialog" />
     </v-toolbar>
+
     <v-data-table-server
       :headers="headers"
       :items="datasets()"
@@ -57,28 +58,20 @@
   <v-dialog v-model="editDialog" max-width="600px">
     <v-card>
       <v-card-title class="text-h5">
-        {{ editing ? "Редактировать ФГОС" : "Добавить ФГОС" }}
+        {{ editing ? "Редактировать профессию" : "Добавить профессию" }}
       </v-card-title>
       <v-card-text>
         <v-form ref="formRef" v-model="valid" @submit.prevent="save">
           <v-text-field
-            v-model="form.fgos_code"
-            label="Код ФГОС"
+            v-model="form.prof_code"
+            label="Код профессии"
             :rules="[rules.required]"
             clearable
           />
           <v-text-field
-            v-model="form.fgos_name"
-            label="Название программы"
+            v-model="form.prof_name"
+            label="Название профессии"
             :rules="[rules.required]"
-            clearable
-          />
-          <v-textarea
-            v-model="form.fgos_prikaz"
-            label="Приказ"
-            :rules="[rules.required]"
-            rows="3"
-            auto-grow
             clearable
           />
         </v-form>
@@ -91,12 +84,12 @@
     </v-card>
   </v-dialog>
 
-  <!-- Confirm Delete -->
+  <!-- Confirm Delete Dialog -->
   <v-dialog v-model="confirmDeleteDialog" max-width="400px">
     <v-card>
-      <v-card-title class="text-h5">Удалить ФГОС</v-card-title>
+      <v-card-title class="text-h5">Удалить профессию</v-card-title>
       <v-card-text>
-        Вы уверены, что хотите удалить запись «{{ datasetToDelete?.fgos_code }} — {{ datasetToDelete?.fgos_name }}»?
+        Вы уверены, что хотите удалить запись «{{ datasetToDelete?.prof_code }} — {{ datasetToDelete?.prof_name }}»?
       </v-card-text>
       <v-card-actions>
         <v-spacer />
@@ -111,19 +104,17 @@
 import { mapActions } from "vuex";
 
 export default {
-  name: "FgosDatasetView",
+  name: "ClassificatorProfDatasetView",
   data() {
     return {
       headers: [
-        { title: "Код", key: "fgos_code" },
-        { title: "Название", key: "fgos_name" },
-        { title: "Приказ", key: "fgos_prikaz" },
-        { title: "Действия", key: "actions", sortable: false, width: '20%' }
+        { title: "Код", key: "prof_code" },
+        { title: "Название", key: "prof_name" },
+        { title: "Действия", key: "actions", sortable: false, width: '20%' },
       ],
       form: {
-        fgos_code: "",
-        fgos_name: "",
-        fgos_prikaz: "",
+        prof_code: "",
+        prof_name: "",
       },
       editingDataset: null,
       datasetToDelete: null,
@@ -135,62 +126,71 @@ export default {
       },
     };
   },
+  computed: {
+    
+  },
   methods: {
     datasets() {
-      return this.$store.state.fgos_dataset.data || [];
+      return this.$store.state.classificator_prof_dataset.data || [];
     },
     isLoading() {
-      return this.$store.state.fgos_dataset.loading;
+      return this.$store.state.classificator_prof_dataset.loading;
     },
     ...mapActions({
-        getFgosDatasets: "fgos_dataset/getFgosDatasets",
-        createFgosDataset: "fgos_dataset/createFgosDataset",
-        updateFgosDataset: "fgos_dataset/updateFgosDataset",
-        deleteFgosDataset: "fgos_dataset/deleteFgosDataset",
+      getProfDatasets: "classificator_prof_dataset/getProfDatasets",
+      createProfDataset: "classificator_prof_dataset/createProfDataset",
+      updateProfDataset: "classificator_prof_dataset/updateProfDataset",
+      deleteProfDataset: "classificator_prof_dataset/deleteProfDataset",
     }),
+
     openCreateDialog() {
       this.editingDataset = null;
       this.form = {
-        fgos_code: "",
-        fgos_name: "",
-        fgos_prikaz: "",
+        prof_code: "",
+        prof_name: "",
       };
       this.editDialog = true;
     },
+
     openEditDialog(item) {
       this.editingDataset = item;
       this.form = { ...item };
       this.editDialog = true;
     },
+
     closeEditDialog() {
       this.editDialog = false;
     },
+
     async save() {
       const payload = { ...this.form };
       if (this.editingDataset) {
-        await this.updateFgosDataset({ id: this.editingDataset.id, payload });
+        await this.updateProfDataset({ id: this.editingDataset.id, payload });
       } else {
-        await this.createFgosDataset(payload);
+        await this.createProfDataset(payload);
       }
-      await this.getFgosDatasets();
+      await this.getProfDatasets();
       this.closeEditDialog();
     },
+
     confirmDelete(item) {
       this.datasetToDelete = item;
       this.confirmDeleteDialog = true;
     },
+
     closeConfirmDialog() {
       this.confirmDeleteDialog = false;
     },
+
     async deleteConfirmed() {
       if (!this.datasetToDelete) return;
-      await this.deleteFgosDataset(this.datasetToDelete.id);
-      await this.getFgosDatasets();
+      await this.deleteProfDataset(this.datasetToDelete.id);
+      await this.getProfDatasets();
       this.closeConfirmDialog();
     },
   },
   async created() {
-    await this.getFgosDatasets();
+    await this.getProfDatasets();
   },
 };
 </script>

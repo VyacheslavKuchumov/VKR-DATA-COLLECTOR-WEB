@@ -1,11 +1,11 @@
 <template>
   <v-container v-if="!$vuetify.display.mobile" max-width="800" class="elevation-0 mt-5 ml-auto mr-auto">
     <v-card-title class="text-wrap" align="center">
-      Управление записями ФГОС
+      Управление кодами ОКВЭД
     </v-card-title>
   </v-container>
 
-  <v-container class="elevation-5 mt-5 ml-auto mr-auto pa-0" max-width="800">
+  <v-container class="elevation-5 mt-5 ml-auto mr-auto pa-0" max-width="900">
     <v-toolbar flat>
       <v-btn icon="mdi-arrow-left" color="primary" @click="$router.push('/datasets')" />
       <v-toolbar-title v-if="!$vuetify.display.mobile" class="text-h6 font-weight-bold">
@@ -13,10 +13,11 @@
       </v-toolbar-title>
       <v-spacer />
       <v-btn v-if="!$vuetify.display.mobile" color="primary" prepend-icon="mdi-plus" @click="openCreateDialog">
-        Добавить ФГОС
+        Добавить ОКВЭД
       </v-btn>
       <v-btn v-else color="primary" icon="mdi-plus" @click="openCreateDialog" />
     </v-toolbar>
+
     <v-data-table-server
       :headers="headers"
       :items="datasets()"
@@ -57,28 +58,20 @@
   <v-dialog v-model="editDialog" max-width="600px">
     <v-card>
       <v-card-title class="text-h5">
-        {{ editing ? "Редактировать ФГОС" : "Добавить ФГОС" }}
+        {{ editing ? "Редактировать ОКВЭД" : "Добавить ОКВЭД" }}
       </v-card-title>
       <v-card-text>
         <v-form ref="formRef" v-model="valid" @submit.prevent="save">
           <v-text-field
-            v-model="form.fgos_code"
-            label="Код ФГОС"
+            v-model="form.okved_code"
+            label="Код ОКВЭД"
             :rules="[rules.required]"
             clearable
           />
           <v-text-field
-            v-model="form.fgos_name"
-            label="Название программы"
+            v-model="form.okved_name"
+            label="Наименование"
             :rules="[rules.required]"
-            clearable
-          />
-          <v-textarea
-            v-model="form.fgos_prikaz"
-            label="Приказ"
-            :rules="[rules.required]"
-            rows="3"
-            auto-grow
             clearable
           />
         </v-form>
@@ -94,9 +87,9 @@
   <!-- Confirm Delete -->
   <v-dialog v-model="confirmDeleteDialog" max-width="400px">
     <v-card>
-      <v-card-title class="text-h5">Удалить ФГОС</v-card-title>
+      <v-card-title class="text-h5">Удалить ОКВЭД</v-card-title>
       <v-card-text>
-        Вы уверены, что хотите удалить запись «{{ datasetToDelete?.fgos_code }} — {{ datasetToDelete?.fgos_name }}»?
+        Вы уверены, что хотите удалить запись «{{ datasetToDelete?.okved_code }} — {{ datasetToDelete?.okved_name }}»?
       </v-card-text>
       <v-card-actions>
         <v-spacer />
@@ -111,19 +104,17 @@
 import { mapActions } from "vuex";
 
 export default {
-  name: "FgosDatasetView",
+  name: "OkvedDatasetView",
   data() {
     return {
       headers: [
-        { title: "Код", key: "fgos_code" },
-        { title: "Название", key: "fgos_name" },
-        { title: "Приказ", key: "fgos_prikaz" },
+        { title: "Код", key: "okved_code" },
+        { title: "Наименование", key: "okved_name" },
         { title: "Действия", key: "actions", sortable: false, width: '20%' }
       ],
       form: {
-        fgos_code: "",
-        fgos_name: "",
-        fgos_prikaz: "",
+        okved_code: "",
+        okved_name: "",
       },
       editingDataset: null,
       datasetToDelete: null,
@@ -137,24 +128,20 @@ export default {
   },
   methods: {
     datasets() {
-      return this.$store.state.fgos_dataset.data || [];
+      return this.$store.state.okved_dataset.data || [];
     },
     isLoading() {
-      return this.$store.state.fgos_dataset.loading;
+      return this.$store.state.okved_dataset.loading;
     },
     ...mapActions({
-        getFgosDatasets: "fgos_dataset/getFgosDatasets",
-        createFgosDataset: "fgos_dataset/createFgosDataset",
-        updateFgosDataset: "fgos_dataset/updateFgosDataset",
-        deleteFgosDataset: "fgos_dataset/deleteFgosDataset",
+      getOkvedDatasets: "okved_dataset/getOkvedDatasets",
+      createOkvedDataset: "okved_dataset/createOkvedDataset",
+      updateOkvedDataset: "okved_dataset/updateOkvedDataset",
+      deleteOkvedDataset: "okved_dataset/deleteOkvedDataset",
     }),
     openCreateDialog() {
       this.editingDataset = null;
-      this.form = {
-        fgos_code: "",
-        fgos_name: "",
-        fgos_prikaz: "",
-      };
+      this.form = { okved_code: "", okved_name: "" };
       this.editDialog = true;
     },
     openEditDialog(item) {
@@ -168,11 +155,11 @@ export default {
     async save() {
       const payload = { ...this.form };
       if (this.editingDataset) {
-        await this.updateFgosDataset({ id: this.editingDataset.id, payload });
+        await this.updateOkvedDataset({ id: this.editingDataset.id, payload });
       } else {
-        await this.createFgosDataset(payload);
+        await this.createOkvedDataset(payload);
       }
-      await this.getFgosDatasets();
+      await this.getOkvedDatasets();
       this.closeEditDialog();
     },
     confirmDelete(item) {
@@ -184,13 +171,13 @@ export default {
     },
     async deleteConfirmed() {
       if (!this.datasetToDelete) return;
-      await this.deleteFgosDataset(this.datasetToDelete.id);
-      await this.getFgosDatasets();
+      await this.deleteOkvedDataset(this.datasetToDelete.id);
+      await this.getOkvedDatasets();
       this.closeConfirmDialog();
     },
   },
   async created() {
-    await this.getFgosDatasets();
+    await this.getOkvedDatasets();
   },
 };
 </script>
