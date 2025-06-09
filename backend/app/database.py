@@ -16,6 +16,7 @@ hh_ru_credentials_collection = db.get_collection("hh_ru_credentials")
 jobs_collection = db.get_collection("jobs")
 
 minstat_worker_collection = db.get_collection("minstat_workers")
+hh_ru_dataset_collection = db.get_collection("hh_ru_dataset")
 
 hh_ru_api_data_collection = db.get_collection("hh_ru_api_data")
 user_collection = db.get_collection("users")

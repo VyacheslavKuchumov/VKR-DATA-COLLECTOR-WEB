@@ -27,6 +27,7 @@
                         class="pa-4 text-center rounded-lg d-flex flex-column"
                         elevation="3"
                         height="100%"
+                        @click="selectDataset(dataset)"
                     >
                         <v-icon 
                             size="64" 
@@ -64,7 +65,7 @@
         data() {
             return {
                 datasets: [
-                    { title: "Кадровые агентства", id: "agencies", icon: "mdi-account-tie" },
+                    { title: "Кадровые агентства", id: "hh-ru", icon: "mdi-account-tie" },
                     { title: "Стратегический план развития региона", id: "region-plan", icon: "mdi-map-legend" },
                     { title: "Национальная программа развития РФ", id: "national-program", icon: "mdi-star-circle" },
                     { title: "Перечень ФГОС", id: "fgos", icon: "mdi-book-education" },

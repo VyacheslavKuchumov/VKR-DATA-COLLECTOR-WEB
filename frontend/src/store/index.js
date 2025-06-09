@@ -6,6 +6,7 @@ import jobs from "@/store/jobs";
 import users from "@/store/users";
 import data_sources from "@/store/data_sources";
 import minstat_workers from "@/store/minstat_workers";
+import hh_ru_dataset from "@/store/hh_ru_dataset";
 
 
 
@@ -23,5 +24,6 @@ export default createStore({
     users: users,
     data_sources: data_sources,
     minstat_workers: minstat_workers,
+    hh_ru_dataset: hh_ru_dataset,
   },
 });

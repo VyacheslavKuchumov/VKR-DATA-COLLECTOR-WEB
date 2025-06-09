@@ -1,7 +1,8 @@
 <template>
   <v-container v-if="!$vuetify.display.mobile" max-width="800" class="elevation-0 mt-5 ml-auto mr-auto">
     <v-card-title class="text-wrap" align="center">
-      Статистика количества работников по ОКВЭД
+      Статистика вакансий по профессиональным ролям
+      
     </v-card-title>
   </v-container>
 
@@ -25,8 +26,9 @@
           </v-card>
         </v-col>
 
-        <!-- Карточки с графиками -->
+        <!-- Карточки с графиками вакансий -->
         <v-col
+            
           v-for="(group, index) in groupedData"
           :key="index"
           cols="12"
@@ -37,16 +39,16 @@
             class="pa-4 text-center rounded-lg d-flex flex-column"
             elevation="3"
             height="100%"
-            @click="openDialog(group.okved_group)"
+            @click="openDialog(group.role)"
             style="cursor: pointer;"
           >
             <v-card-title class="text-subtitle-1 justify-center text-wrap">
-              {{ group.okved_group }}
+              {{ group.role }}
             </v-card-title>
 
             <v-sparkline
-              :model-value="group.workerNums"
-              :labels="group.years"
+              :model-value="group.vacanciesNums"
+              :labels="group.dates"
               :smooth="16"
               :auto-draw="true"
               class="mt-4 flex-grow-1"
@@ -65,7 +67,7 @@
   <v-dialog v-model="dialog" max-width="800px">
     <v-card>
       <v-card-title>
-        Данные по «<strong>{{ selectedGroup }}</strong>»
+        Данные по «<strong>{{ selectedRole }}</strong>»
       </v-card-title>
       <v-card-text>
         <v-data-table
@@ -76,40 +78,38 @@
           hide-default-footer
           hide-default-header
         >
-          <!-- Редактирование года -->
-          <template #item.year="{ item }">
+          <!-- Редактирование даты -->
+          <template #item.entry_date="{ item }">
             <v-edit-dialog
-              :return-value.sync="item.year"
+              :return-value.sync="item.entry_date"
               large
               @save="saveRow(item)"
             >
-              {{ item.year }}
+              {{ item.entry_date }}
               <template #input>
-                <v-text-field v-model="item.year" type="number" />
+                <v-text-field v-model="item.entry_date" type="date" />
               </template>
             </v-edit-dialog>
           </template>
 
-          <!-- Редактирование числа работников -->
-          <template #item.worker_num="{ item }">
+          <!-- Редактирование числа вакансий -->
+          <template #item.vacancies_num="{ item }">
             <v-edit-dialog
-              :return-value.sync="item.worker_num"
+              :return-value.sync="item.vacancies_num"
               large
               @save="saveRow(item)"
             >
-              {{ item.worker_num }}
+              {{ item.vacancies_num }}
               <template #input>
-                <v-text-field v-model="item.worker_num" type="number" />
+                <v-text-field v-model="item.vacancies_num" type="number" />
               </template>
             </v-edit-dialog>
           </template>
 
-          <!-- 
-          <template #item.actions="{ item }">
+          <!-- <template #item.actions="{ item }">
             <v-icon small class="mr-2" @click="deleteRow(item.id)">
               mdi-delete
             </v-icon>
-            
           </template> -->
         </v-data-table>
       </v-card-text>
@@ -125,80 +125,83 @@
 import { mapActions } from 'vuex';
 
 export default {
-  name: 'StatOtchetDatasetView',
+  name: 'HhRuDatasetView',
   data() {
     return {
       dialog: false,
-      selectedGroup: null,
+      selectedRole: null,
       tableHeaders: [
-        { text: 'Год', value: 'year', align: 'start' },
-        { text: 'Число работников', value: 'worker_num' },
+        { text: 'Дата записи', value: 'entry_date', align: 'start' },
+        { text: 'Число вакансий', value: 'vacancies_num' },
         { text: 'Действия', value: 'actions', sortable: false },
       ],
     };
   },
   computed: {
-    // Группировка данных для карточек
+    datasets() {
+      return this.$store.state.hh_ru_dataset.data || [];
+    },
+    // Группировка данных по роли
     groupedData() {
       const groups = {};
-      this.workers.forEach(item => {
-        const key = item.okved_group;
+      this.datasets.forEach(item => {
+        const key = item.professional_role;
         if (!groups[key]) groups[key] = [];
         groups[key].push(item);
       });
       return Object.keys(groups).map(key => {
-        const entries = groups[key].sort((a, b) => a.year - b.year);
+        const entries = groups[key].sort((a, b) =>
+          new Date(a.entry_date) - new Date(b.entry_date)
+        );
         return {
-          okved_group: key,
-          years: entries.map(e => e.year.toString()),
-          workerNums: entries.map(e => e.worker_num),
+          role: key,
+          dates: entries.map(e => e.entry_date),
+          vacanciesNums: entries.map(e => e.vacancies_num),
         };
       });
     },
-    // Все данные из стора
-    workers() {
-      return this.$store.state.minstat_workers.data || [];
-    },
-    loading() {
-      return this.$store.state.minstat_workers.loading;
-    },
-    // Только строки выбранной группы
+    
+    // Строки для выбранной роли
     filteredRows() {
-      if (!this.selectedGroup) return [];
-      return this.workers
-        .filter(item => item.okved_group === this.selectedGroup)
-        // Убедимся, что у каждого есть уникальный id
+      if (!this.selectedRole) return [];
+      return this.datasets
+        .filter(item => item.professional_role === this.selectedRole)
         .map(item => ({ ...item }));
     },
   },
   methods: {
+    // Все данные из стора
+    
+    loading() {
+      return this.$store.state.hh_ru_dataset.loading;
+    },
     ...mapActions({
-      getMinstatWorkers: 'minstat_workers/getMinstatWorkers',
-      updateMinstatWorker: 'minstat_workers/updateMinstatWorker',
-      deleteMinstatWorker: 'minstat_workers/deleteMinstatWorker',
+      getHhRuDatasets: 'hh_ru_dataset/getHhRuDatasets',
+      updateHhRuDataset: 'hh_ru_dataset/updateHhRuDataset',
+      deleteHhRuDataset: 'hh_ru_dataset/deleteHhRuDataset',
     }),
 
-    openDialog(group) {
-      this.selectedGroup = group;
+    openDialog(role) {
+      this.selectedRole = role;
       this.dialog = true;
     },
 
-    // Сохраняем изменения: диспатчим экшен updateMinstatWorker
+    // Сохранение изменений записи
     async saveRow(item) {
-      const { id, year, worker_num, okved_group } = item;
-      await this.updateMinstatWorker({
+      const { id, entry_date, professional_role, vacancies_num } = item;
+      await this.updateHhRuDataset({
         id,
-        payload: { year, worker_num, okved_group }
+        payload: { entry_date, professional_role, vacancies_num }
       });
     },
 
-    // Удаляем строку
+    // Удаление записи
     async deleteRow(id) {
-      await this.deleteMinstatWorker(id);
+      await this.deleteHhRuDataset(id);
     },
   },
   async created() {
-    await this.getMinstatWorkers();
+    await this.getHhRuDatasets();
   },
 };
 </script>

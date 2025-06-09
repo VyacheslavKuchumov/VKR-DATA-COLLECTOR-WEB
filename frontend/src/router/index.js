@@ -20,6 +20,7 @@ import NationalPlanParsingView from "@/views/data_parsing/national_plan/National
 
 //datasets
 import StatOtchetDatasetView from "@/views/nsi_datasets/stat_otchetnost/StatOtchetDatasetView.vue";
+import HHRuDatasetView from "@/views/nsi_datasets/hh_ru/HHRuDatasetView.vue";
 
 // hh.ru data retrival
 import JobsView from "@/views/data_parsing/hh_ru/JobsView.vue";
@@ -122,7 +123,12 @@ const routes = [
     name: "stat-otchet-dataset",
     component: StatOtchetDatasetView,
   },
-
+  // route for hh.ru dataset
+  {
+    path: "/datasets/hh-ru",
+    name: "hh-ru-dataset",
+    component: HHRuDatasetView,
+  },
 
   // route for hh.ru job logs
   {
