@@ -62,9 +62,9 @@
   </v-container>
 
   <!-- Диалог с таблицей -->
-  <v-dialog v-model="dialog" max-width="800px">
+  <v-dialog v-model="dialog" max-width="400px">
     <v-card>
-      <v-card-title>
+      <v-card-title class="text-wrap">
         Данные по «<strong>{{ selectedGroup }}</strong>»
       </v-card-title>
       <v-card-text>
