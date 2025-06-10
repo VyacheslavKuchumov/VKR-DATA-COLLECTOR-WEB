@@ -42,7 +42,6 @@
                         label="Тип прогноза"
                         outlined
                         dense
-
                         clearable
                     ></v-select>
                 </v-col>
@@ -87,7 +86,6 @@
             </v-row>
         </v-card>
 
-        <!-- Индикатор загрузки -->
         <v-overlay 
             :model-value="loading" 
             class="align-center justify-center"
@@ -97,11 +95,9 @@
                 color="primary" 
                 size="64" 
                 indeterminate
-            >
-            </v-progress-circular>
+            />
         </v-overlay>
 
-        <!-- Результаты прогноза -->
         <v-card v-if="showResults" class="mt-6 pa-6">
             <v-card-title class="text-h6">
                 Прогноз спроса на 
@@ -165,7 +161,7 @@
             
             <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="primary" @click="saveResults" prepend-icon="mdi-content-save">
+                <v-btn disabled color="primary" @click="saveResults" prepend-icon="mdi-content-save">
                     Сохранить отчет
                 </v-btn>
             </v-card-actions>
@@ -181,138 +177,118 @@ export default {
             loading: false,
             showResults: false,
             chartKey: 0,
-            
-            // Параметры выбора
+
             selectedModel: null,
             selectedPeriod: null,
             forecastType: 'profession',
             selectedProfession: null,
             selectedSector: null,
-            
-            // Результаты прогноза
+
+            currentDemand: null,
+
             forecastResult: {
                 current: 0,
                 forecast: 0,
                 change: 0
             },
-            
-            // Данные для графика
+
             sparklineData: [],
             sparklineLabels: [],
-            
-            // Списки для выбора
-            mlModels: [
-                'Линейная регрессия',
-                'Дерево решений',
-                'Градиентный бустинг',
-            ],
-            
+
+            mlModels: ['Линейная регрессия', 'Дерево решений', 'Градиентный бустинг'],
             periods: [1, 2, 3, 4, 5],
-            
-            forecastTypes: [
-                'profession',
-                'sector'
-            ],
-            
+            forecastTypes: ['profession', 'sector'],
+
             professions: [
-                'Программист',
-                'Инженер-конструктор',
-                'Врач-терапевт',
-                'Учитель математики',
-                'Аналитик данных',
-                'Маркетолог',
-                'Бухгалтер',
-                'Электрик',
-                'Повар',
-                'Водитель'
+                'Программист', 'Инженер-конструктор', 'Врач-терапевт', 'Учитель математики',
+                'Аналитик данных', 'Маркетолог', 'Бухгалтер', 'Электрик', 'Повар', 'Водитель'
             ],
-            
+
             economicSectors: [
-                'IT и коммуникации',
-                'Производство',
-                'Здравоохранение',
-                'Образование',
-                'Финансы и страхование',
-                'Торговля',
-                'Транспорт и логистика',
-                'Строительство',
-                'Гостиничный бизнес',
-                'Сельское хозяйство'
-            ]
+                'IT и коммуникации', 'Производство', 'Здравоохранение', 'Образование',
+                'Финансы и страхование', 'Торговля', 'Транспорт и логистика',
+                'Строительство', 'Гостиничный бизнес', 'Сельское хозяйство'
+            ],
+
+            baseValuesByProfession: {
+                'Программист': 420, 'Инженер-конструктор': 370, 'Врач-терапевт': 450,
+                'Учитель математики': 390, 'Аналитик данных': 410, 'Маркетолог': 330,
+                'Бухгалтер': 360, 'Электрик': 300, 'Повар': 280, 'Водитель': 340,
+            },
+
+            baseValuesBySector: {
+                'IT и коммуникации': 1000, 'Производство': 1200, 'Здравоохранение': 900,
+                'Образование': 850, 'Финансы и страхование': 750, 'Торговля': 1100,
+                'Транспорт и логистика': 950, 'Строительство': 980,
+                'Гостиничный бизнес': 700, 'Сельское хозяйство': 650,
+            },
         };
     },
     computed: {
         canRunForecast() {
             if (!this.selectedModel || !this.selectedPeriod) return false;
-            
+            return this.forecastType === 'profession' ? !!this.selectedProfession : !!this.selectedSector;
+        }
+    },
+    watch: {
+        selectedProfession(val) {
             if (this.forecastType === 'profession') {
-                return !!this.selectedProfession;
-            } else {
-                return !!this.selectedSector;
+                this.currentDemand = this.baseValuesByProfession[val] || 300;
             }
+        },
+        selectedSector(val) {
+            if (this.forecastType === 'sector') {
+                this.currentDemand = this.baseValuesBySector[val] || 300;
+            }
+        },
+        forecastType() {
+            this.currentDemand = null;
         }
     },
     methods: {
         runForecast() {
-            // Показать индикатор загрузки
             this.loading = true;
             this.showResults = false;
-            
-            // Имитация работы модели (2 секунды)
+
             setTimeout(() => {
                 this.generateResults();
                 this.loading = false;
                 this.showResults = true;
-                this.chartKey++; // Принудительное обновление графика
+                this.chartKey++;
             }, 2000);
         },
-        
+
         generateResults() {
-            // Генерация случайных данных для демонстрации
-            const baseValue = Math.floor(Math.random() * 500) + 100;
-            const changePercentage = (Math.random() * 30) - 10; // От -10% до +20%
-            
-            this.forecastResult = {
-                current: baseValue,
-                forecast: Math.round(baseValue * (1 + changePercentage / 100)),
-                change: parseFloat(changePercentage.toFixed(1))
-            };
-            
-            // Генерация данных для графика
+            const base = this.currentDemand || 300;
+            const changePercentage = (Math.random() * 30) - 10;
+
+            this.forecastResult.current = base;
+            this.forecastResult.change = parseFloat(changePercentage.toFixed(1));
+            this.forecastResult.forecast = Math.round(base * (1 + this.forecastResult.change / 100));
+
             this.sparklineData = [];
             this.sparklineLabels = [];
-            
-            // Исторические данные (5 лет назад - текущий год)
+
             for (let i = 5; i > 0; i--) {
                 const year = new Date().getFullYear() - i;
-                const value = Math.round(baseValue * (0.8 + Math.random() * 0.4));
-                
+                const value = Math.round(base * (0.85 + Math.random() * 0.15));
                 this.sparklineData.push(value);
                 this.sparklineLabels.push(year.toString());
             }
-            
-            // Текущий год
-            this.sparklineData.push(this.forecastResult.current);
+
+            this.sparklineData.push(base);
             this.sparklineLabels.push(new Date().getFullYear().toString());
-            
-            // Прогноз на выбранный период
+
             const period = parseInt(this.selectedPeriod);
             for (let i = 1; i <= period; i++) {
                 const year = new Date().getFullYear() + i;
-                const progress = i / period;
-                const value = Math.round(
-                    this.forecastResult.current + 
-                    (this.forecastResult.forecast - this.forecastResult.current) * progress
-                );
-                
+                const value = Math.round(base + (this.forecastResult.forecast - base) * (i / period));
                 this.sparklineData.push(value);
                 this.sparklineLabels.push(year.toString());
             }
         },
-        
+
         saveResults() {
-            // В реальном приложении здесь будет сохранение отчета
-            console.log("Сохранение результатов прогноза");
             this.$toast.success('Отчет успешно сохранен!');
         }
     },
