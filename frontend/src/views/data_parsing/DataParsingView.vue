@@ -66,8 +66,8 @@
             return {
                 sources: [
                     { title: "Кадровые агентства", id: "hh_ru/jobs", icon: "mdi-account-tie" },
-                    // { title: "Стратегический план развития региона", id: "regional-plan", icon: "mdi-map-legend" },
-                    // { title: "Национальная программа развития РФ", id: "national-plan", icon: "mdi-star-circle" },
+                    { title: "Стратегический план развития региона", id: "regional-plan", icon: "mdi-map-legend" },
+                    { title: "Национальная программа развития РФ", id: "national-plan", icon: "mdi-star-circle" },
                     { title: "ФГОС", id: "fgos", icon: "mdi-book-education" },
                     { title: "Профстандарты", id: "profstandards", icon: "mdi-certificate" },
                     { title: "Официальная статистика по количеству работников", id: "statistics", icon: "mdi-chart-bar" },
