@@ -3,6 +3,12 @@ import instance from "@/middlewares";
 
 import WebSocketTest from "@/views/WebsocketTest.vue";
 import HomeView from "@/views/HomeView.vue";
+import MainMenuView from "@/views/MainMenuView.vue";
+
+// auth
+import LoginView from "@/views/Auth/LoginView.vue";
+import RegisterView from "@/views/Auth/RegisterView.vue";
+
 import DatasetsView from "@/views/nsi_datasets/DatasetsView.vue";
 import DataParsingView from "@/views/data_parsing/DataParsingView.vue";
 import UsersView from "@/views/users/UsersView.vue";
@@ -37,12 +43,30 @@ const routes = [
   //   name: "websocket-test",
   //   component: WebSocketTest,
   // },
+  // route for login
+  {
+    path: "/login",
+    name: "login",
+    component: LoginView,
+  },
+  {
+    path: "/register",
+    name: "register",
+    component: RegisterView,
+  },
   {
     path: "/",
     name: "home",
     component: HomeView,
     
   },
+  // route for main menu
+  {
+    path: "/main-menu",
+    name: "main-menu",
+    component: MainMenuView,
+  },
+
   // route for datasets
   {
     path: "/datasets",
@@ -172,6 +196,7 @@ const routes = [
     component: JobLogsView,
     props: true,
   }
+
  
  
   

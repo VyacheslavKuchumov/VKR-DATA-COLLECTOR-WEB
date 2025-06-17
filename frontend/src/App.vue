@@ -22,6 +22,15 @@
           </v-list-item>
 
           <v-list-item 
+            to="/login"
+            title="Войти">
+          </v-list-item>
+          <v-list-item 
+            to="/register"
+            title="Выйти">
+          </v-list-item>
+
+          <v-list-item 
             to="/users"
             title="Управление пользователями">
           </v-list-item>
@@ -57,8 +66,8 @@
           </v-list-item> -->
       </v-list>
     </v-navigation-drawer>
-    <v-main height="100vh">
-      <v-container>
+    <v-main min-height="100vh" class="background-image">
+      <v-container >
         <router-view />
       </v-container>
     </v-main>
@@ -86,4 +95,19 @@ export default {
 };
 </script>
 
+<style scoped>
+.gradient-background {
 
+  background: linear-gradient(135deg, #ffe0b2 0%, #1e18c050 100%);
+  min-height: 100vh; /* чтобы перекрыть всю высоту экрана */
+}
+
+.background-image {
+  background-image: url('@/assets/background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: repeat-y;
+  min-height: 100vh;
+}
+
+</style>

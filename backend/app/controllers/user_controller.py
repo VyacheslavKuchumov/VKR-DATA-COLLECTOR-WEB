@@ -23,6 +23,14 @@ async def list_users() -> UserCollection:
     users = [UserModel.model_validate(d) for d in docs]
     return UserCollection(users=users)
 
+# поиск пользователя по email
+async def show_user_by_email(email: str) -> UserModel:
+    # Поиск по email
+    doc = await user_collection.find_one({"email": email})
+    if not doc:
+        raise HTTPException(status_code=404, detail=f"User with email {email} not found")
+    return UserModel.model_validate(doc)
+
 async def show_user(id: str) -> UserModel:
     # Поиск по ObjectId
     try:

@@ -6,9 +6,9 @@
     </v-container>
     <v-container class="elevation-5 mt-5 ml-auto mr-auto pa-0" max-width="800">
         <v-toolbar flat>
-            <v-btn icon="mdi-arrow-left" color="primary" @click="$router.push('/')" />
+            <v-btn icon="mdi-arrow-left" color="primary" @click="$router.go(-1)" />
             <v-toolbar-title v-if="!$vuetify.display.mobile" class="text-h6 font-weight-bold">
-                На главную
+                Назад
             </v-toolbar-title>
             <v-spacer />
             <v-btn v-if="!$vuetify.display.mobile" color="primary" prepend-icon="mdi-plus" @click="openCreateDialog">
@@ -126,7 +126,7 @@ export default {
       ],
       editDialog: false,
       confirmDeleteDialog: false,
-      roles: ['Администратор', 'Пользователь'],
+      roles: ['admin', 'user'],
       editingUser: null,
       userToDelete: null,
       userForm: { name: "", email: "", role: "" },

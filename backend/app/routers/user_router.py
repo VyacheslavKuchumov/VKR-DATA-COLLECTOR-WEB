@@ -6,6 +6,7 @@ from app.controllers.user_controller import (
     show_user,
     update_user,
     delete_user,
+    show_user_by_email,
 )
 
 router = APIRouter()
@@ -28,6 +29,15 @@ async def post_user(user: UserModel = Body(...)):
 )
 async def get_users():
     return await list_users()
+
+@router.get(
+    "/auth/{email}",
+    response_model=UserModel,
+    response_model_by_alias=False,
+    response_description="Get user by email",
+)
+async def get_user_by_email(email: str):
+    return await show_user_by_email(email)
 
 @router.get(
     "/{id}",

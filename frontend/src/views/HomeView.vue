@@ -1,131 +1,91 @@
 <template>
-    <v-container v-if="!$vuetify.display.mobile" max-width="800" class="elevation-0 mt-5 ml-auto mr-auto">
-        <v-card-title class="text-wrap text-center justify-center">
-            <h1 class="text-h4">Система анализа и прогнозирования кадрового потенциала</h1>
-        </v-card-title>
-    </v-container>
+  <v-container align="center">
+    <!-- Герой-секция -->
+    <v-sheet
+      class="hero-section"
+      color="surface-light"
+      height="500px"
+      max-width="1000px"
+      tile
+      
+    >
+      <v-row class="fill-height" align="center" justify="center">
+        <v-col cols="12" md="8" class="text-center">
+          <h1 class="display-2 font-weight-bold text-white">
+            Прогнозирование кадровой потребности<br />Пермского края
+          </h1>
+          <p class="subtitle-1 mt-4 text-white">
+            Сбор, анализ и прогнозирование потребности в кадрах  
+            в соответствии с Программой развития Пермского края.
+          </p>
+          <v-btn large color="primary" class="mt-6" to="/main-menu">
+            Начать
+          </v-btn>
+        </v-col>
+      </v-row>
+    </v-sheet>
 
-    <v-container class="elevation-0 mt-5 ml-auto mr-auto" max-width="1000">
-        <v-card-text>
-            <v-row>
-                <v-col 
-                    v-for="(section, index) in sections" 
-                    :key="index"
-                    cols="12" 
-                    sm="6" 
-                    md="6"
-                >
-                    <v-card 
-                        class="pa-4 rounded-lg d-flex flex-column"
-                        elevation="3"
-                        height="100%"
-                        :color="section.color"
-                        @click="selectSection(section)"
-                    >
-                        <v-container v-if="!$vuetify.display.mobile" class="d-flex align-center">
-                            <v-icon 
-                                size="64" 
-                                :color="section.iconColor"
-                                class="mr-4"
-                            >
-                                {{ section.icon }}
-                            </v-icon>
-                            
-                            <v-card-title class="text-h6 font-weight-bold text-wrap">
-                                {{ section.title }}
-                            </v-card-title>
-                        </v-container>
-                        <v-container v-else class="d-flex align-center justify-center mb-2">
-                            <v-icon 
-                                size="42" 
-                                :color="section.iconColor"
-                                class="mb-2"
-                            >
-                                {{ section.icon }}
-                            </v-icon>
-                            <v-card-title class="text-h6 font-weight-bold text-center">
-                                {{ section.title }}
-                            </v-card-title>
-                        </v-container>
-                        
-
-                        <v-card-text class="mt-2 flex-grow-1">
-                            {{ section.description }}
-                        </v-card-text>
-                        
-                        <v-card-actions class="justify-end">
-                            <v-btn 
-                                color="white"
-                                variant="outlined"
-                                @click.stop="selectSection(section)"
-                                append-icon="mdi-arrow-right"
-                                size="large"
-                            >
-                                Перейти
-                            </v-btn>
-                        </v-card-actions>
-                    </v-card>
-                </v-col>
-            </v-row>
-        </v-card-text>
+    <!-- Особенности -->
+    <v-container max-width="1000">
+      <v-row>
+        <v-col v-for="feat in features" :key="feat.title">
+          <v-card outlined height="150px" max-width="300px" class="mx-2">
+            <!-- <v-img
+              :src="feat.img"
+              min-height="150px"  class="white--text align-end"
+            >
+            </v-img> -->
+            <v-card-title class="headline">{{ feat.title }}</v-card-title>
+            <v-card-text>{{ feat.desc }}</v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
     </v-container>
+  </v-container>
 </template>
 
 <script>
+import { mapState } from "vuex";
 
-    export default {
-        name: "HomeView",
-        data() {
-            return {
-                sections: [
-                    { 
-                        title: "Пользователи", 
-                        id: "users", 
-                        icon: "mdi-account-cog", 
-                        description: "Управление учетными записями, ролями и правами доступа пользователей системы",
-                        color: "blue-lighten-4",
-                        iconColor: "blue-darken-2"
-                    },
-                    { 
-                        title: "Сбор данных", 
-                        id: "data-parsing", 
-                        icon: "mdi-cloud-download", 
-                        description: "Интеграция данных из внешних источников и систем",
-                        color: "orange-lighten-4",
-                        iconColor: "orange-darken-2"
-                    },
-                    { 
-                        title: "НСИ датасеты", 
-                        id: "datasets", 
-                        icon: "mdi-database", 
-                        description: "Просмотр и управление нормативно-справочной информацией",
-                        color: "green-lighten-4",
-                        iconColor: "green-darken-2"
-                    },
-                    { 
-                        title: "Прогнозы", 
-                        id: "forecast", 
-                        icon: "mdi-chart-line", 
-                        description: "Аналитические отчеты и прогнозные модели",
-                        color: "purple-lighten-4",
-                        iconColor: "purple-darken-2"
-                    }
-                ]
-            };
+export default {
+  name: "HomeView",
+  data() {
+    return {
+      features: [
+        {
+          title: "Сбор данных",
+          desc:
+            "Автоматизация сбора демографических, образовательных и экономических показателей.",
+          img: "https://positivethinking.tech/wp-content/uploads/2020/12/Data_volume_Big_Analytics_Streaming_France_Belgium_Luxembourg_Switzerland_Germany_Positive_Thinking_Company-800x480.jpg",
         },
-        methods: {
-            selectSection(section) {
-                console.log("Переход в раздел:", section.title);
-                this.$router.push(`/${section.id}`);
-            }
-        }
+        {
+          title: "Анализ данных",
+          desc:
+            "Использование ИИ для очистки, визуализации и интерпретации трендов на рынке труда в режиме реального времени.",
+          img: "https://analyzing-testing.netzsch.com/_Resources/Persistent/4/d/4/e/4d4ea9e36c3524300b40aa2ee2c37cf85ca4876d/NETZSCH_Data-Science_Big-Data-scaled-1847x1038-1600x899.webp",
+        },
+        {
+          title: "Прогнозирование",
+          desc:
+            "Разработка прогнозов потребности в кадрах в соответствии с программой развития.",
+          img: "https://www.devoteam.com/wp-content/uploads/2024/09/data-service.jpg",
+        },
+      ],
     };
+  },
+  computed: {
+
+  },
+};
 </script>
 
 <style scoped>
-
-.text-h6 {
-    font-size: 1.25rem;
-    line-height: 1.6;
+.hero-section {
+  background: linear-gradient(
+    135deg,
+    rgba(75, 172, 252, 0.829),
+    rgba(0, 49, 122, 0.8)
+  );
+  color: white;
 }
 </style>
