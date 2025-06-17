@@ -13,6 +13,8 @@ import DatasetsView from "@/views/nsi_datasets/DatasetsView.vue";
 import DataParsingView from "@/views/data_parsing/DataParsingView.vue";
 import UsersView from "@/views/users/UsersView.vue";
 import ForecastView from "@/views/forecast/ForecastView.vue";
+import KcpCalculatorView from "@/views/forecast/KcpCalculatorView.vue";
+import UserProfileView from "@/views/users/UserProfileView.vue";
 
 // parsers
 import ProfStandardParsingView from "@/views/data_parsing/prof_standard/ProfStandardParsingView.vue";
@@ -85,12 +87,27 @@ const routes = [
     name: "users",
     component: UsersView,
   },
+  // route for user profile
+  {
+    path: "/profile",
+    name: "user-profile",
+    component: UserProfileView,
+  },
+
   // route for forecast
   {
     path: "/forecast",
     name: "forecast",
     component: ForecastView,
   },
+  // route for kcp calculator
+  {
+    path: "/kcp-calculation",
+    name: "kcp-calculator",
+    component: KcpCalculatorView,
+  },
+
+
   // route for prof standard parsing
   {
     path: "/data-parsing/profstandards",
