@@ -7,7 +7,10 @@ export default {
   state: () => ({
     data: [],          // массив пользователей
     loading: false,    // индикатор загрузки
-    error: null,       // текст ошибки
+    error: null,
+    
+    user_role: null,
+    isAuth: false, // флаг авторизации
   }),
   mutations: {
     setData(state, data) {
@@ -20,6 +23,13 @@ export default {
     setError(state, error) {
       state.error = error;
     },
+    setUserRole(state, role) {
+      state.user_role = role;
+      localStorage.setItem('role', role);
+    },
+    setAuth(state, isAuth) {
+      state.isAuth = isAuth;
+    }
   },
   actions: {
     // Получить список пользователей
@@ -35,7 +45,8 @@ export default {
         localStorage.setItem('email', response.data.email)
         localStorage.setItem('name', response.data.name)
         localStorage.setItem('role', response.data.role)
-        router.push('/')
+    
+        window.location.href = "/";
 
       } catch (error) {
         commit("setError", error.message || "Error authenticating user");
@@ -49,7 +60,8 @@ export default {
         localStorage.removeItem('email');
         localStorage.removeItem('name');
         localStorage.removeItem('role');
-    
+
+        commit("setAuth", false);
         // Сброс состояния
         commit("setData", []);
         commit("setLoading", false);

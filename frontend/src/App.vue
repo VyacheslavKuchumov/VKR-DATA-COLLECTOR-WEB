@@ -3,7 +3,7 @@
     
     <v-app-bar  color="primary">
       <v-app-bar-nav-icon @click="drawer = !drawer" />
-      <v-toolbar-title @click="this.$router.push(`/`);">Admin</v-toolbar-title>
+      <v-toolbar-title @click="this.$router.push(`/`);">{{ userRole }}</v-toolbar-title>
 
       <v-spacer></v-spacer>
 
@@ -20,36 +20,46 @@
           <v-list-item to="/">
             <v-list-item-title>Главная</v-list-item-title>
           </v-list-item>
+          <v-list-item to="/main-menu">
+            <v-list-item-title>Меню</v-list-item-title>
+          </v-list-item>
+          
+          
 
           <v-list-item 
-            to="/login"
-            title="Войти">
-          </v-list-item>
-          <v-list-item 
-            to="/register"
-            title="Выйти">
-          </v-list-item>
-
-          <v-list-item 
+            v-if="userRole === 'admin'"
             to="/users"
             title="Управление пользователями">
           </v-list-item>
+
+          <v-list-item 
+            v-if="userRole === 'admin'"
+            to="/data-parsing"
+            title="Сбор данных">
+          </v-list-item>
+
 
           <v-list-item 
             to="/datasets"
             title="НСИ датасеты">
           </v-list-item>
 
-          <v-list-item 
-            to="/data-parsing"
-            title="Сбор данных">
-          </v-list-item>
-
+          
           <v-list-item 
             to="/forecast"
             title="Прогнозы">
           </v-list-item>
 
+          <v-list-item 
+            v-if="!userRole"
+            to="/login"
+            title="Войти в аккаунт">
+          </v-list-item>
+          <v-list-item 
+            v-if="userRole"
+            @click="logout"
+            title="Выйти из аккаунта">
+          </v-list-item>
 <!-- 
           <v-list-item 
             to="/hh-ru-jobs"
@@ -90,7 +100,23 @@ export default {
   },
   
   methods: {
-
+    logout() {
+      this.$store.dispatch("auth/logout");
+      window.location.href = "/";
+    },
+  },
+  async created() {
+    const role = localStorage.getItem("role");
+    if (role) {
+      this.$store.commit("auth/setUserRole", role);
+      this.$store.commit("auth/setAuth", true);
+    }
+  },
+  computed: {
+    ...mapState({
+      userRole: (state) => state.auth.user_role,
+      isAuth: (state) => state.auth.isAuth,
+    }),
   },
 };
 </script>
