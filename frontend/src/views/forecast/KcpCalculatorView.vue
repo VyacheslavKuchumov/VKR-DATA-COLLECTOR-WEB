@@ -5,7 +5,7 @@
     </v-card-title>
   </v-container>
 
-  <v-container class="elevation-0 mt-5 ml-auto mr-auto" max-width="1000">
+  <v-container class="elevation-2 mt-5 ml-auto mr-auto bg-white rounded-lg" max-width="1000">
     <v-toolbar flat color="white">
       <v-btn icon="mdi-arrow-left" color="primary" @click="$router.go(-1)" />
       <v-toolbar-title v-if="!$vuetify.display.mobile" class="text-h6 font-weight-bold">
@@ -14,7 +14,7 @@
       <v-spacer />
     </v-toolbar>
 
-    <v-card class="mt-5 pa-6">
+    <v-card class="elevation-0 mt-5 pa-6">
       <v-row>
         <v-col cols="12" md="6">
           <v-select
