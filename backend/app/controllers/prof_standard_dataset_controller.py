@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status
 from fastapi.responses import Response
-from pymongo import ReturnDocument
+from pymongo import ReturnDocument, ASCENDING
 from bson import ObjectId
 
 from app.database import prof_standard_dataset_collection
@@ -23,7 +23,7 @@ async def list_prof_standard_datasets() -> ProfStandardDatasetCollection:
     """
     Retrieve up to 1000 professional standard records.
     """
-    docs = await prof_standard_dataset_collection.find().to_list(1000)
+    docs = await prof_standard_dataset_collection.find().sort("prof_standard_code", ASCENDING).to_list(1000)
     items = [ProfStandardDatasetModel.model_validate(d) for d in docs]
     return ProfStandardDatasetCollection(records=items)
 

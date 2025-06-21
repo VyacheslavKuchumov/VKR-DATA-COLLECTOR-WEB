@@ -5,7 +5,7 @@
     </v-card-title>
   </v-container>
 
-  <v-container class="elevation-5 mt-5 ml-auto mr-auto pa-0" max-width="800">
+  <v-container class="elevation-5 mt-5 ml-auto mr-auto pa-0" max-width="1100">
     <v-toolbar flat>
       <v-btn icon="mdi-arrow-left" color="primary" @click="$router.push('/datasets')" />
       <v-toolbar-title v-if="!$vuetify.display.mobile" class="text-h6 font-weight-bold">
@@ -125,7 +125,7 @@ export default {
         { title: "Сфера", key: "prof_standard_sphere" },
         { title: "Тип", key: "prof_standard_type" },
         { title: "Наименование", key: "prof_standard_name" },
-        { title: "Действия", key: "actions", sortable: false, width: '20%' }
+        { title: "Действия", key: "actions", sortable: false}
       ],
       form: {
         prof_standard_code: "",

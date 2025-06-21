@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status
 from fastapi.responses import Response
-from pymongo import ReturnDocument
+from pymongo import ReturnDocument, ASCENDING
 from bson import ObjectId
 
 from app.database import fgos_dataset_collection
@@ -23,7 +23,7 @@ async def list_fgos_datasets() -> FgosDatasetCollection:
     """
     Retrieve up to 1000 FGOS records.
     """
-    docs = await fgos_dataset_collection.find().to_list(1000)
+    docs = await fgos_dataset_collection.find().sort("fgos_code", ASCENDING).to_list(1000)
     items = [FgosDatasetModel.model_validate(d) for d in docs]
     return FgosDatasetCollection(records=items)
 
