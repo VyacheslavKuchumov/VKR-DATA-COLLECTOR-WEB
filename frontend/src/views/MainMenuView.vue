@@ -102,7 +102,7 @@
               </v-card-title>
             </v-container>
             <v-card-text class="mt-2 flex-grow-1">
-              Просмотр и управление нормативно-справочной информацией
+              Просмотр сформированных датасетов
             </v-card-text>
             <v-card-actions class="justify-end">
               <v-btn
@@ -179,7 +179,7 @@
               </v-card-title>
             </v-container>
             <v-card-text class="mt-2 flex-grow-1">
-              Доступ к персональным настройкам и информации профиля
+              Доступ к истории расчетов и персональным данным
             </v-card-text>
             <v-card-actions class="justify-end">
               <v-btn
@@ -218,7 +218,7 @@
               </v-card-title>
             </v-container>
             <v-card-text class="mt-2 flex-grow-1">
-              Выполнение расчёта ключевых показателей эффективности
+              Выполнение расчёта контрольных цифр приема для образовательных программ
             </v-card-text>
             <v-card-actions class="justify-end">
               <v-btn
