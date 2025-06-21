@@ -5,7 +5,7 @@
     </v-card-title>
   </v-container>
 
-  <v-container class="elevation-5 mt-5 ml-auto mr-auto pa-0" max-width="800">
+  <v-container class="elevation-5 mt-5 ml-auto mr-auto pa-0 bg-white" max-width="800">
     <v-toolbar flat>
         <v-btn icon="mdi-arrow-left" color="primary" @click="$router.go(-1)" />
         <v-toolbar-title v-if="!$vuetify.display.mobile" class="text-h6 font-weight-bold">
@@ -15,7 +15,7 @@
       
     </v-toolbar>
 
-    <v-container >
+    <v-container class="bg-white">
         <v-card
             v-for="(log, index) in (job()?.logs || []).slice().reverse()"
             :key="index"

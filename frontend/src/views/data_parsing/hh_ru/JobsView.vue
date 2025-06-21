@@ -100,7 +100,7 @@
       </v-card>
     </v-dialog>
 
-    <v-container>
+    
       <v-data-table-server
         :headers="headers"
         :items="jobs"
@@ -125,7 +125,7 @@
           </v-btn>
         </template>
       </v-data-table-server>
-    </v-container>
+    
   </v-container>
 </template>
 
