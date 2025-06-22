@@ -10,6 +10,13 @@
             type="email"
             ></v-text-field>
             <v-text-field
+            label="Введите ФИО"
+            v-model="name"
+            :rules="nameRules"
+            required
+            type="text"
+            ></v-text-field>
+            <v-text-field
             label="Введите пароль"
             v-model="password"
             :rules="passwordRules"
@@ -17,12 +24,13 @@
             type="password"
             ></v-text-field>
             <v-text-field
-            label="Введите имя"
-            v-model="name"
-            :rules="nameRules"
+            label="Повторите пароль"
+            v-model="repeat_password"
+            :rules="passwordRules"
             required
-            type="text"
+            type="password"
             ></v-text-field>
+            
             <v-btn type="submit" :disabled="!valid" class="form-btn" color="primary">
             Регистрация
             </v-btn>
