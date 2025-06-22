@@ -7,7 +7,7 @@
 
     <v-container class="elevation-2 mt-5 ml-auto mr-auto bg-white rounded-lg" max-width="1200">
         <v-toolbar flat color="white">
-            <v-btn icon="mdi-arrow-left" color="primary" @click="$router.go(-1)" />
+            <v-btn icon="mdi-arrow-left" color="primary" @click="$router.push('/main-menu')" />
             <v-toolbar-title v-if="!$vuetify.display.mobile" class="text-subtitle-1 font-weight-bold">
                 Назад
             </v-toolbar-title>
