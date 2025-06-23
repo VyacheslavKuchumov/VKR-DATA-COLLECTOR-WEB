@@ -196,7 +196,7 @@ export default {
             sparklineLabels: [],
 
             mlModels: ['Линейная регрессия', 'Дерево решений', 'Градиентный бустинг'],
-            periods: [1, 2, 3, 4, 5],
+            periods: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
             forecastTypes: ['profession', 'sector'],
 
             professions: [
